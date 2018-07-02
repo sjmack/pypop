@@ -199,10 +199,12 @@ MODIFICATIONS.
 
  <!-- separator -->
  <xsl:template name="separator">
-  <xsl:call-template name="append-pad">
-   <xsl:with-param name="padChar" select="'-'"/>
-   <xsl:with-param name="length" select="78"/>
-  </xsl:call-template>
+   <!-- set to 90 by default -->
+   <xsl:param name="length" select="90"/>
+   <xsl:call-template name="append-pad">
+     <xsl:with-param name="padChar" select="'-'"/>
+     <xsl:with-param name="length" select="$length"/>
+   </xsl:call-template>
  </xsl:template>
 
  <!-- finds the maximum value of a set of numeric elements, found in
@@ -226,6 +228,27 @@ MODIFICATIONS.
     <xsl:value-of select="string-length(.)"/></xsl:if>
   </xsl:for-each>
  </xsl:template>
+
+<!-- get the length to pad strings from a 'path' or from a fixed 'header', whichever is bigger -->
+ <xsl:template name="pad-string-len">
+  <xsl:param name="path" select="."/>
+  <xsl:param name="header" select="."/>
+  <xsl:variable name="path-len-max">
+    <xsl:call-template name="max-string-len">
+      <xsl:with-param name="path" select="$path"/>
+    </xsl:call-template>
+  </xsl:variable>
+
+  <xsl:choose>
+    <xsl:when test="$path-len-max > string-length($header)">
+      <xsl:value-of select="$path-len-max + 1"/>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:value-of select="string-length($header) + 1"/>
+    </xsl:otherwise>
+  </xsl:choose>
+ </xsl:template>
+
 
  <!-- finds the maximum length of an XML element (tag), found in 'path' -->
  <xsl:template name="max-tag-len">

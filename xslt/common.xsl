@@ -57,11 +57,14 @@ MODIFICATIONS.
   <text col="longit">Longitude</text>
  </data:pop-col-headers>
 
- <xsl:param name="hardyweinberg-col-width" select="12"/>
- <xsl:param name="hardyweinberg-first-col-width"
- select="$hardyweinberg-col-width + 6"/>
+ <!-- set to the length of the longest label in the overall HW stats table
+     in this case it is "All heterozygotes" -->
+ <xsl:param name="hardyweinberg-col-width" select="17"/>
 
  <xsl:param name="page-width" select="80"/>
+
+ <xsl:variable name="GL-unphased-genotype-separator" select="'+'"/>
+ <xsl:variable name="GL-phased-genotype-separator" select="'~'"/>
 
  <xsl:template match="/">
   <xsl:apply-templates/> 
@@ -325,6 +328,23 @@ MODIFICATIONS.
    
   </xsl:if>
 
+  <xsl:if test="haplostats">
+
+   <!-- only if multi-locus analyses have been performed, print out -->
+   <!-- multi-locus population stats: estimation of haplotypes and LD -->
+  
+   <xsl:call-template name="section">
+    <xsl:with-param name="title">Multi-locus Analyses [haplo-stats]</xsl:with-param>
+    <xsl:with-param name="level" select="1" />
+    <xsl:with-param name="number" select="'II'"/>
+    <xsl:with-param name="text">
+     <xsl:apply-templates select="haplostats"/>
+    </xsl:with-param>
+   </xsl:call-template>
+   
+  </xsl:if>
+
+
  </xsl:template>
  
  <!-- leave filename blank, this is output in a different context  -->
@@ -498,21 +518,37 @@ MODIFICATIONS.
       
       <xsl:call-template name="newline"/>
 
+      <xsl:variable name="allele-pad-len">
+	<xsl:call-template name="pad-string-len">
+	  <xsl:with-param name="path" select="allele/@name"/>
+	  <xsl:with-param name="header" select="'Name'"/>
+	</xsl:call-template>
+      </xsl:variable>
+
+      <xsl:variable name="freq-pad-len" select="10"/> <!-- hardcode frequency width -->
+
+      <xsl:variable name="count-pad-len">
+	<xsl:call-template name="pad-string-len">
+	  <xsl:with-param name="path" select="allele/count"/>
+	  <xsl:with-param name="header" select="'(Count)'"/>
+	</xsl:call-template>
+      </xsl:variable>
+      
       <!-- save header as a string to go at end of both tables -->
       <xsl:variable name="header-as-string">
        <xsl:call-template name="append-pad">
 	<xsl:with-param name="padVar" select="'Name'"/>
-	<xsl:with-param name="length">10</xsl:with-param>
+	<xsl:with-param name="length" select="$allele-pad-len"/>
        </xsl:call-template>
        
        <xsl:call-template name="append-pad">
 	<xsl:with-param name="padVar" select="'Frequency'"/>
-	<xsl:with-param name="length">10</xsl:with-param>
+	<xsl:with-param name="length" select="$freq-pad-len"/>
        </xsl:call-template>
        
        <xsl:call-template name="append-pad">
 	<xsl:with-param name="padVar" select="'(Count)'"/>
-	<xsl:with-param name="length">10</xsl:with-param>
+	<xsl:with-param name="length" select="$count-pad-len"/>
        </xsl:call-template>
        
        <xsl:call-template name="newline"/>
@@ -522,15 +558,15 @@ MODIFICATIONS.
       <xsl:variable name="totals-as-string">
        <xsl:call-template name="append-pad">
 	<xsl:with-param name="padVar">Total</xsl:with-param>
-	<xsl:with-param name="length" select="10"/>
+	<xsl:with-param name="length" select="$allele-pad-len"/>
        </xsl:call-template>
        <xsl:call-template name="append-pad">
 	<xsl:with-param name="padVar" select="totalfrequency"/>
-	<xsl:with-param name="length" select="10"/>
+	<xsl:with-param name="length" select="$freq-pad-len"/>
        </xsl:call-template>
        <xsl:call-template name="append-pad">
 	<xsl:with-param name="padVar" select="totalcount"/>
-	<xsl:with-param name="length" select="10"/>
+	<xsl:with-param name="length" select="$count-pad-len"/>
        </xsl:call-template>
        <xsl:call-template name="newline"/>
       </xsl:variable>
@@ -543,7 +579,7 @@ MODIFICATIONS.
        <!-- create a header for table -->
        <xsl:call-template name="append-pad">
 	<xsl:with-param name="padVar" select="'Counts ordered by frequency'"/>
-	<xsl:with-param name="length">30</xsl:with-param>
+	<xsl:with-param name="length" select="$allele-pad-len + $freq-pad-len + $count-pad-len"/>
        </xsl:call-template>
        
        <xsl:call-template name="newline"/>
@@ -553,12 +589,22 @@ MODIFICATIONS.
        <!-- loop through each allele by count/frequency -->
        <xsl:for-each select="allele">
 	<xsl:sort select="count" data-type="number" order="descending"/>
-	<xsl:for-each select="frequency|count|@name">
+
 	 <xsl:call-template name="append-pad">
-	  <xsl:with-param name="padVar" select="."/>
-	  <xsl:with-param name="length">10</xsl:with-param>
+	  <xsl:with-param name="padVar" select="@name"/>
+	  <xsl:with-param name="length" select="$allele-pad-len"/>
 	 </xsl:call-template>
-	</xsl:for-each>
+
+	 <xsl:call-template name="append-pad">
+	  <xsl:with-param name="padVar" select="frequency"/>
+	  <xsl:with-param name="length" select="$freq-pad-len"/>
+	 </xsl:call-template>
+
+	 <xsl:call-template name="append-pad">
+	  <xsl:with-param name="padVar" select="count"/>
+	  <xsl:with-param name="length" select="$count-pad-len"/>
+	 </xsl:call-template>
+
 	<xsl:call-template name="newline"/>
        </xsl:for-each>
 
@@ -566,14 +612,13 @@ MODIFICATIONS.
        <xsl:value-of select="$totals-as-string"/>
       </xsl:variable>      
        
-      
       <!-- hold allele counts ordered by name in string -->
       <xsl:variable name="allelecounts-by-name">
        
        <!-- create a header for table -->
        <xsl:call-template name="append-pad">
 	<xsl:with-param name="padVar" select="'Counts ordered by name'"/>
-	<xsl:with-param name="length">30</xsl:with-param>
+	<xsl:with-param name="length" select="$allele-pad-len + $freq-pad-len + $count-pad-len"/>
        </xsl:call-template>
        
        <xsl:call-template name="newline"/>
@@ -583,12 +628,22 @@ MODIFICATIONS.
        <!-- loop through each allele by name-->
        <xsl:for-each select="allele">
 	<xsl:sort select="@name" data-type="text" order="ascending"/>
-	<xsl:for-each select="frequency|count|@name">
+
 	 <xsl:call-template name="append-pad">
-	  <xsl:with-param name="padVar" select="."/>
-	  <xsl:with-param name="length">10</xsl:with-param>
+	  <xsl:with-param name="padVar" select="@name"/>
+	  <xsl:with-param name="length" select="$allele-pad-len"/>
 	 </xsl:call-template>
-	</xsl:for-each>
+
+	 <xsl:call-template name="append-pad">
+	  <xsl:with-param name="padVar" select="frequency"/>
+	  <xsl:with-param name="length" select="$freq-pad-len"/>
+	 </xsl:call-template>
+
+	 <xsl:call-template name="append-pad">
+	  <xsl:with-param name="padVar" select="count"/>
+	  <xsl:with-param name="length" select="$count-pad-len"/>
+	 </xsl:call-template>
+
 	<xsl:call-template name="newline"/>
        </xsl:for-each>
 

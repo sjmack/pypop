@@ -1,0 +1,1935 @@
+2015-07-31  Alex Lancaster  <alexl AT users.sourceforge.net>
+
+	* setup.py (ext_HweEnum): Add "/usr/lib64" to build enumeration
+	model on x86_64 arch.
+
+2009-05-11  Alex Lancaster  <alexl AT users.sourceforge.net>
+
+	* pypop.py (interactive_message): "Python for Population Genetics"
+	-> "Python for Population Genomics" for consistency throughout.
+
+2008-07-27  Alex Lancaster  <alexl AT users.sourceforge.net>
+
+	* Haplo.py (Emhaplofreq._runEmhaplofreq): Ensure that allele
+	length doesn't exceed maximum length allowed by emhaplofreq
+	module.  Emit XML <group> tag in this case and also print out
+	warning to stdout.
+
+	* xslt/emhaplofreq.xsl: Emit corresponding warning in text output.
+
+2008-07-27  Alex Lancaster  <alexl AT users.sourceforge.net>
+
+	* NEWS: Update with notes on emhaplofreq.
+
+2007-09-22  Alex Lancaster  <alexl AT users.sourceforge.net>
+
+	* pval/pval_wrap.i: Declare function prototypes in '%{ %}'
+	verbatim section.
+
+2007-09-21  Alex Lancaster  <alexl AT users sourceforge net>
+
+	* pypop.py (generateTSV): Use ',' rather than '+' for diagnostic
+	print outputs because we are now dealing with a list rather than a
+	single value.
+
+	* setup.py: Use get_config_var() rather than get_config_vars() for "OPT".
+	(ext_Emhaplofreq, ext_Gthwe_files): Replace fprintf -> pyfprintf
+	pre-processor directive which now seems to fail on GCC 4.1.2 with
+	a new __SWIG__ directive which will be used to select the correct
+	function internally.
+	Make extensions depend on SWIG/typemap.i so they get recompiled
+	when typemaps get changed.
+	(ext_Pvalue): Add new files needed for compiilng the Pvalue
+	extension.
+
+	* pval/Makefile, pval/Rmath.h, pval/dpq.h, pval/gamma.c,
+	pval/lgamma.c, pval/lgammacor.c, pval/nmath.h, pval/pgamma.c:
+	Synchronize R-2.5.1 nmath module codebase.  This uses the complete
+	redesign of the pgamma function used to compute the p-value by
+	Morten Welinder, originally for Gnumeric that appears to avoids
+	the hangs seen with the old version when compiled with the newer
+	GCC.  Tested that p-values computed are consistent with the older
+	values by comparison with the values in
+	pval/comparison-r-code-vs-num-recipes.txt
+
+	* pval/bd0.c, pval/dnorm.c, pval/dpois.c, pval/fmax2.c,
+	pval/stirlerr.c: Likewise add new files from R-2.5.1 nmath module
+	codebase.
+
+2007-09-19  Owen Solberg  <solberg@mws11.biol.berkeley.edu>
+
+	* ParseFile.py (ParseFile._mapFields): Only report exception in
+	the field headings if debug mode is turned on.  Also, change
+	"error" to "warning."
+
+	* Main.py (Main._runFilters): AnthonyNolan filter now looks for 3
+	optional flags, described in the new config.ini file, and passes
+	those flags to the Filter.py module.
+
+	* Filter.py (AnthonyNolanFilter.checkAlleleName): Logical
+	statement so that lowres alleles (alleles with short names) can be
+	retained optionally (see new config.ini file.)
+	(AnthonyNolanFilter.checkAlleleName): Logical statement so that
+	unknown alleles can be retained, or optionally discarded.
+	(AnthonyNolanFilter.__init__): Import three new variables to flag
+	for default/optional behavior with regards to dealing with allele
+	names.  Described in the config.ini file.
+	(AnthonyNolanFilter.filterAllele): If statement to deal with
+	ambiguous allele name designation (ie 0101/0102 etc).  If these
+	are found, the names are split up, checked independently, and then
+	the filtered names are put back together with the slashes.
+	(BinningFilter.doCustomBinning): Now the custom binning function
+	can take the ambiguous allele notation, and check each part
+	individually, and if they are all part of the same "custom
+	binning" -- it uses the custom binning rule.
+	(BinningFilter.lookupCustomBinning): New subroutine to do the
+	"looking up" of allele names -- necessary now that "simple" and
+	"ambiguous" case allele names have been dealt with separately in
+	the binning filter.
+
+	* config.ini (): More comprehensive set of custom binning rules
+	for dealing with heterogeneous 4-digit lit data.  Also new flags
+	for changing the behavior of the Anthony Nolan filter.
+
+2007-09-17  Alex Lancaster <alexl AT users sourceforge net>
+
+	* DataTypes.py (Genotypes._checkAllele): Reorder debug statement.
+	(Genotypes._genDataStructures): Keep track of untyped individuals
+	for semi-typed data. Because we allow missing alleles for
+	semityped data, we need to add 0.5 of an individual for each
+	untyped allele found for the bookkeeping to work.  Use one-decimal
+	point floating point number for the corresponding XML tag rather
+	than an integer.
+
+2007-09-09  Alex Lancaster <alexl AT users sourceforge net>
+
+	* NEWS: Note new features and fixes since 2005 for PyPop 0.7.0.
+
+2007-06-09  Alex Lancaster <alexl AT users sourceforge net>
+
+	* standalone.spec: Don't strip binaries, Cygwin won't run the
+	resulting DLLs.
+	Don't use "-y" command to zip, removed from GNU zip.
+
+2007-06-09  Owen Solberg  <solberg@mws11.biol.berkeley.edu>
+
+	* RandomBinning.py (RandomBinsForHomozygosity._dumpResults):
+	Includes the POP filename as the first column of the output of the
+	RandomBinning.
+
+	* Filter.py (BinningFilter.doCustomBinning): Cleans up the logic
+	for CustomBinning, so that the filter output won't report that an
+	allele name was replaced _by itself_, which is how it was
+	behaving.
+
+2007-05-11  Owen Solberg  <solberg@mws11.biol.berkeley.edu>
+
+	* Main.py (Main._runFilters): Checks for the
+	"sequenceConsensusMethod" option in the ini file, and passes the
+	setting on the Filter module.  If option is missing or set to
+	anything other than 'greedy' then the sequence filter should
+	function normally.
+
+	* Filter.py (AnthonyNolanFilter._getConsensusFromLines): New code
+	to deal with 'greedy' consensus sequence method.  If this option
+	is not specified in the ini file, pypop sequence filter should
+	function as it alwasy has (no change in default behavior.)
+
+	* config.ini : Added option for 'greedy' consensus sequence
+	method.  Also tidied up some of the syntax and formatting of this
+	default ini file.
+
+2007-05-10  Owen Solberg  <solberg@mws11.biol.berkeley.edu>
+
+	* RandomBinning.py (RandomBinsForHomozygosity.__init__): Log file
+	is instantiated to take the randomization output.
+	(RandomBinsForHomozygosity.randomMethod): changes to call the two
+	new internal functions.
+	(RandomBinsForHomozygosity.sequenceMethod): changes to call the
+	two new internal functions.
+	(RandomBinsForHomozygosity._updateCountDict): New internal
+	function to keep track of the binned allele counts, as a
+	dictionary.
+	(RandomBinsForHomozygosity._dumpResults): New internal function to
+	call the returnBulkHomozygosityStats function, and then dump the
+	random binning results all at once.  The output file is the same
+	as the filter log file, except with -[locus]-randomized.tsv as the
+	suffix.
+
+	* Main.py (Main._doGenotypeFile): Some small changes in the manner
+	that random binning is called, in accordance with the major
+	changes made to RandomBinning.py and the new function in
+	Homozygosity.py.
+
+	* Homozygosity.py (HomozygosityEWSlatkinExact.returnBulkHomozygosityStats): 
+	New function to work with the RandomBinning module.  It takes all
+	of the randomizations, computes the homozygosity statistics, and
+	then returns them all at once.  This is faster than looking them
+	up one randomization at a time.  Also, the randomizations are
+	given to this function as a dictionary, in which each key is a
+	tuple of the sorted allele counts and the definition is the number
+	of times that that allele count was observed among the
+	randomizations.  This saves additional time.
+
+2007-05-03  Owen Solberg  <solberg@mws11.biol.berkeley.edu>
+
+	* config.ini (binningDigits): Better information about the
+	CustomBinning filter included in the default ini file.
+
+2007-05-01  Owen Solberg  <solberg@mws11.biol.berkeley.edu>
+
+	* Main.py (Main._runFilters): Don't print the customBinningDict
+	unless debug mode is on.
+
+	* Filter.py (BinningFilter.doCustomBinning): Made further
+	refinements to this method and also changed the logging so that it
+	now goes to the -filter.xml file in a CDATA block, rather than
+	just printing the binning results to standard out.
+
+2007-05-01  Owen Solberg  <solberg@mws11.biol.berkeley.edu>
+
+	* Filter.py (BinningFilter.doCustomBinning): Bug fix: Resolved
+	inconsistent behavior between "exact matches" and "close matches"
+	and the way the CustomBinning section is interpreted from the ini
+	file.  -- now, either case will assign the first allele name to
+	the matched allele (if preceeded by an *) or the entire hashed
+	0101/0102/0103 allele name (if there is no *).
+
+2007-04-24  Alex Lancaster  <alexl AT users sourceforge net>
+
+	* SWIG/typemap.i: Remove 'python' from %typemap, now deprecated in SWIG.
+
+	* setup.py (ext_Gthwe_files): Distribute statistics.c file by default.
+	(ext_Gthwe_macros): Don't use FORTIFY_SOURCE = 1, done at top-level.
+	Compile with individual genotypes support by default.
+	(xslt_files): "PyPop" -> "pypop".
+	Update URL to http://www.pypop.org/
+
+	* pypop.py: Use /usr/share/pypop/ rather than /usr/share/PyPop/ as
+	name of shared directory.
+
+	* Makefile (NAME_SRC): Use lowercase 'pypop' for filename of
+	package.
+
+	* MANIFEST.in: Cleanup includes.
+
+2007-04-10  Owen Solberg  <solberg@mws11.biol.berkeley.edu>
+
+	* Main.py (Main._doGenotypeFile): Pass the logFile to the
+	AnthonyNolanFilter when running the sequence-based random binning
+	method.  This log file is just use to keep track of how it made
+	the bins.  Actual results to go STOUT.  This can be changed in the
+	future if we want a separate output file for the random binning
+	results.
+
+2007-02-23  Alex Lancaster  <alexl AT users sourceforge net>
+
+	* Main.py (Main._doGenotypeFile): Add NoSectionError exception
+	handing to handle missing HardyWeinbergGuoThompson[MonteCarlo]
+	section(s). Thanks to Owen Solberg for the bug report.
+
+	* xslt/hardyweinberg.xsl (gen-genotype-pvals): Fixed first
+	<xsl:param>: 'pvals-diff -> 'pvals-chen'.  Thanks to Owen Solberg
+	for the bug report.
+
+2007-01-24  Alex Lancaster  <alexl AT users sourceforge net>
+
+	* Meta.py (Meta.__init__): Change '13ihwg-fmt' to 'ihwg-fmt', xslt
+	doesn't like QNames to start with a number.
+
+	* xslt/meta-to-r.xsl: Likewise, also change
+	'13th-header-line-start' to 'ihwg-header-line-start'.
+
+2006-07-31  Alex Lancaster  <alexl AT users sourceforge net>
+
+	* Meta.py (Meta.__init__): Replace all spaces by '%20' to make the
+	system identifier a true RFC 3986 compliant URI.  Use '-' in place
+	of spaces in the entity names.
+
+	* Filter.py (BinningFilter.doCustomBinning): If ruleSet starts
+	with a '*', use the first split (before the first '/') as the name
+	of the new allele, rather than the full name.
+
+2006-05-01  Owen Solberg  <solberg@mws11.biol.berkeley.edu>
+
+	* Meta.py (Meta.__init__): close each intermediate dat file
+	immediately upon finishing with it.
+
+2006-04-18  Alex Lancaster  <alexl AT users sourceforge net>
+
+	* MANIFEST.in: Likewise add so that they are distributed
+
+	* setup.py (xslt_files): Add 'haplolist-by-group',
+	'phylip-allele', 'phylip-haplo' xsl files so that these files are
+	installed.
+
+	* config.ini ([HardyWeinberg]): Add new flag as 'chenChisq' so
+	that it is documentedin this sample .ini file.
+
+	* Main.py (Main._doGenotypeFile): Parse 'flagChenTest'
+	in [HardyWeinberg] section of config.ini (default to '0' or
+	False), pass to HardyWeinberg module.
+
+	* HardyWeinberg.py (HardyWeinberg.__init__): Add: 'flagChenTest'
+	as a parameter, so that it can be set in config.ini.
+
+2006-04-06  Alex Lancaster  <alexl AT users sourceforge net>
+
+	* DataTypes.py (Genotypes._checkAllele): Put debugging code into
+	self.debug clauses.
+	(Genotypes._genDataStructures): Likewise.
+
+	* Filter.py (AnthonyNolanFilter._getConsensusFromLines): Make sure
+	that null alleles are not treated as if they were potential
+	matches.
+	Treat unsequencedSite as a unique allele to make sure that those
+	sites don't get treated as having a consensus sequence if only one
+	of the sequences in the the set of matches is typed
+	(AnthonyNolanFilter._getConsensusFromLines): Some debugging code.
+
+2006-04-04  Owen Solberg  <solberg@mws11.biol.berkeley.edu>
+
+	* Filter.py (AnthonyNolanFilter._getConsensusFromLines): if no
+	matching sequence is found in the MSF files, then return a
+	sequence of * symbols (ie, will be treated as truly missing data,
+	not untyped alleles.
+
+2006-04-04  Alex Lancaster  <alexl AT users sourceforge net>
+
+	* xslt/meta-to-r.xsl (allelecounts/untypedindividuals,
+	allelecounts/unsequencedsites): New columns to keep track of
+	number of untyped and unsequenced individuals. for
+	'1-locus-summary.dat' output.
+	
+	* xslt/common.xsl (unsequencedsites): New template to output total
+	number of unsequencedSites per locus.
+
+	* Main.py (Main.__init__): Add an empty unsequencedSite variable,
+	pass into Genotypes constructor.
+	(Main._runFilters): Add new section option 'unsequencedSite' for
+	'[Sequence]' section ConfigParser instance.  Pass through to
+	AnthonyNolanFilter constructor
+	(Main._doGenotypeFile): Add to tuple extraction in
+	Genotypes.getAlleleCountAt() call.
+
+	* DataTypes.py (_serializeAlleleCountDataAt): Output XML tag with
+	total number of unsequencedSites.
+	(Genotypes.__init__): New parameter 'unsequencedSite' (no
+	default).
+	(Genotypes._checkAllele): Check for unsequencedSite as well as for
+	untypedAllele when doing counts, and keep a separate count.
+	(Genotypes._genDataStructures): New count unsequencedSites.
+	Likewise check for both 'untyped' and 'unsequenced' when keeping
+	track of counts.  Add unsequencedSites to the tuple stored in
+	self.freqcount (per locus).
+	(Genotypes.getAlleleCountAt): Add to tuple.
+	(Genotypes.serializeAlleleCountDataAt): Likewise.
+	(Genotypes.getLocusDataAt): Likewise.
+	(AlleleCounts._genDataStructures): Likewise.
+	(AlleleCounts.serializeAlleleCountDataAt): Likewise.
+
+	* Filter.py (AnthonyNolanFilter.__init__): Add new parameter
+	unsequencedSite as designator for a site which does not have a
+	sequence or has a sequence that is ambiguous (default to '#').
+	(AnthonyNolanFilter.makeSeqDictionaries): Use unsequencedSite
+	rather than '*' as standard null placeholder
+	(AnthonyNolanFilter.makeSeqDictionaries): Don't include '#' in
+	count of unique positions.  (Note FIXME: check whether we still
+	need to check for '.' for 'X')
+	(AnthonyNolanFilter.translateMatrix): Only '*' is now the missing
+	data, pass through "#" so that it can be counted separately.
+	(AnthonyNolanFilter._getConsensusFromLines): Check for unsequenced
+	site, if not unique, then use unsequencedSite as letter. If an
+	allele is not found, tag as unsequencedSite (FIXME: check this!)
+
+
+2006-04-03  Alex Lancaster  <alexl AT users sourceforge net>
+
+	* xslt/sort-by-locus.xsl (sort-by-locus): Add two parameters
+	'two-en' and 'k', filters out populations with sample size (2n)
+	and number of distinct alleles (k) parameters less than these
+	values (default to '0').
+
+2006-03-08  Alex Lancaster  <alexl AT users sourceforge net>
+
+	* popmeta.py (ihwg_output): Change semantics of batchsize, make
+	"0" (default) process files separately if only R dat files is
+	enabled.  If batchsize not set explicitly (and therefore 0) set
+	batchsize to '1' is PHYLIP mode is enabled.
+
+	* Meta.py (_translate_file_to): Check that the file is valid
+	before parsing and return a success flag if it is.
+	(translate_file_to_stdout, translate_file_to_file): Return success
+	flag.
+	(Meta.__init__): Change semantics of batchsize, make "0" (default)
+	process files separately if only R dat files is enabled.  
+	Put freeDoc() call inside try.
+	If batchsize=0, do each file separately.
+	If transformation doesn't work, skip that file in the renaming and
+	emit a warning.
+
+2006-03-07  Alex Lancaster  <alexl AT users sourceforge net>
+
+	* Meta.py (Meta.__init__): Fix a nasty memory leak [by calling
+	freeDoc() on a DOM instance] with the libxml2 bindings (which
+	require manual memory management) which caused popmeta to gobble
+	up all system resources bringing a machine to it's knees.
+	Added '1-locus-hardyweinberg.dat'
+
+2006-03-06  Alex Lancaster  <alexl AT users sourceforge net>
+
+	* setup.py (py_modules): Add missing "Meta" module.
+
+2006-02-19  Alex Lancaster  <alexl AT users sourceforge net>
+
+	* xslt/meta-to-r.xsl (gen-lines, /): Add new file
+	'1-locus-hardyweinberg.dat' for generating tables of p-values for
+	each value of lumping.
+
+	* xslt/hardyweinberg.xsl (new-hardyweinberg-format): New
+	parameter.
+	(hardyweinberg, hardyweinbergGuoThompson,
+	hardyweinbergEnumeration): Output lump level (if present) in
+	header.
+	(genotypetable): Get list of unique columns from <genotypetable>
+	in each <hardyweinberg*> element (rather than global <allelecount>
+	element) if new-hardyweinberg-format is set, this is because the
+	genotype table may not be different for each run of hardyweinberg
+	due to lumping.
+	(gen-genotype-pvals): Likewise search each local genotypetable
+	table.
+
+	* setup.py (ext_HweEnum): Compile external module against gsl and
+	gslcblas libraries.
+
+	* Utils.py: Import operator.
+	(unique_elements): New function, gets unique elements in a list.
+
+	* Main.py: New imports.
+	(Main._doGenotypeFile): Do lumping for
+	HardyWeinberg{GuoThompson,Enumeration} if specified in .ini file,
+	using an 'alleleLump' parameter which is a comma-separated list of
+	lumping levels.
+	(Main._genTextOutput): Specify new parameter to stylesheet for new
+	format XML.
+
+	* HardyWeinberg.py (HardyWeinberg.serializeTo): Specify the allele
+	lumping level as an attribute in <hardyweinberg> XML tag.
+	(HardyWeinbergGuoThompson.dumpTable): Likewise.  Output open XML
+	tags <hardyweinbergGuoThompson> in Python module rather than
+	inside the C _Gthwe wrapper module.  Specify this to the _Gthwe
+	module.
+	Call HardyWeinberg.serializeXMLTableTo() here so that there is a
+	record of the genotype matrix for each different HW analysis.
+	Note this breaks compatibility with previous stylesheets.
+	
+	(HardyWeinbergEnumeration.serializeTo): Likewise specify output
+	allelelump attribute and call HardyWeinberg.serializeXMLTableTo().
+
+	* DataTypes.py (Genotypes.getAlleleCountAt): New parameter
+	lumpValue, get the allele count of a locus based on lumping
+	alleles with counts <= lumpValue.
+	(Genotypes.getLocusDataAt): Likewise.
+	(getLumpedDataLevels): New function: returns a dictionary of
+	tuples with alleleCount and locusData lumped by different levels
+	specified as a list of integers.
+
+2006-02-10  Alex Lancaster  <alexl AT users sourceforge net>
+
+	* xslt/emhaplofreq.xsl (haplotypefreq): Add a check, if the
+	maximum haplotype length is > 20, double the 21 character limit to
+	42 and put sorted-by-frequency and sorted-by-name on separate
+	pages, rather than side-by-side.
+
+	* xslt/hardyweinberg.xsl (indiv-geno-pval-cutoff): New parameter
+	for the cut-off p-value used to display genotypes, default to
+	0.05.  This can be overriden by a command-line arg to
+	xsltproc (e.g. "--param indiv-geno-pval-cutoff 1" passed to
+	xsltproc would display all genotypes).
+	(gen-genotype-pvals): Use $indiv-geno-pval-cutoff rather than
+	hard-coded 0.05 level.
+
+	* Main.py (Main._doGenotypeFile): Add a new .ini file option
+	'doOverall' to '[HardyWeinbergEnumeration]' section.  Set to
+	false ('0') by default.  Pass through the HardyWeinbergEnumeration
+	module.
+
+	* HardyWeinberg.py (HardyWeinbergEnumeration.__init__): New
+	parameter: 'doOverall', which if set to true ('1'), then do
+	overall locus-level p-value test.  Default is false ('0').  This
+	parameter is now passed to the SWIG wrapper call: run_external().
+	If we aren't doing overall test, we don't get the overall p-value
+	from the wrapper.
+	(HardyWeinbergEnumeration.serializeTo): Use an empty XML tag for
+	overall p-value if doOverall is false.  Add a new "method"
+	attribute to the <pvalue> tags for genotypes, if overall is not
+	done, specify that we are using the "three-by-three", otherwise
+	specify it as "full".
+
+2006-01-11  Alex Lancaster  <alexl AT users sourceforge net>
+
+	* Meta.py (Meta.__init__): Add '1-locus-pairwise-fnd.dat' to list
+	of files to process when appending files.
+
+2006-01-05  Alex Lancaster  <alexl AT users sourceforge net>
+
+	* xslt/meta-to-r.xsl (gen-lines): Add new section
+	1-locus-pairwise-fnd for dealing with pairwise fnd values.  Use
+	exsl:document extension to emit a new file:
+	"1-locus-pairwise-fnd.dat".
+
+2006-01-02  Alex Lancaster  <alexl AT users sourceforge net>
+
+	* xslt/homozygosity.xsl (homozygosityEWSlatkinExactPairwise):
+	Process the section.
+
+	* xslt/common.xsl (dataanalysis): Handle pairwise homozygosity,
+	pass to homozygosityEWSlatkinExactPairwise.
+
+	* Haplo.py (Emhaplofreq.allPairwise): Relocate some reusable code
+	to DataTypes.{checkIfSequenceData, getMetaLocus,
+	getLocusPairs}. Use them.
+
+	* Homozygosity.py (HomozygosityEWSlatkinExactPairwise): New class.
+	Generates homozygosity values using the Ewens-Watterson test for
+	all pairwise loci, or all sites within a gene for sequence data.
+	Note: this really only works for sequence data where the phase for
+	sites within an allele are known.
+
+	* Main.py (Main._doGenotypeFile): Handle a new section in the .ini
+	file: [homozygosityEWSlatkinExactPairwise], use new class.
+	
+	* DataTypes.py (checkIfSequenceData): New function: hack to
+	determine whether we are analysing sequence: we use a regex to
+	match anything in the form A_32 or A_-32.  
+	(getMetaLocus): Get the name of the gene if dealing with sequence
+	data. 
+	(getLocusPairs): New function, generates all pairs of loci. It
+	returns all pairs within a given gene if dealing with sequence
+	data.
+	All relocated from Haplo.py.
+	
+	* Utils.py (StringMatrix.getSuperType): New method.  Returns a
+	matrix grouped by columns.  e.g if matrix is [[A01, A02, B01,
+	B02], [A11, A12, B11, B12]] then getSuperType('A:B') will return
+	the matrix with the column vector:
+	[[A01:B01, A02:B02], [A11:B11, A12:B12]].  Used for generating
+	haplotype "alleles" for sequence data.
+
+2005-11-08  Alex Lancaster  <alexl AT users sourceforge net>
+
+	* NEWS: Note recent fixes.
+
+	* Haplo.py (Emhaplofreq.__init__): Initialize instance variable
+	sequenceData to 0, was not being properly initialised before being
+	used in other methods.
+
+2005-10-27  Alex Lancaster  <alexl AT users sourceforge net>
+
+	* Filter.py (AnthonyNolanFilter.makeSeqDictionaries): Add another
+	special case for HLA data: test for 7 digits in allele
+	names (e.g. if 2402101 is not found insert a zero after the first
+	4 digits to form 24020101, and check for that).  This is to cope
+	with yet-another HLA nomenclature change.
+
+2005-10-26  Alex Lancaster  <alexl AT users sourceforge net>
+
+	* NEWS: Note fix below.
+
+	* Filter.py (AnthonyNolanFilter.makeSeqDictionaries): Make another
+	special case, specific to HLA data, if a "null alleles" (ending in
+	"N") is found, mark it as missing data.  
+	Some comment cleanups, uncomment generation of matrix of
+	polymorphic sequences for the moment.  Still need to deal with
+	converting 7-digit to 8-digit Anthony Nolan HLA data.
+
+2005-09-20  Alex Lancaster  <alexl AT users sourceforge net>
+
+	* xslt/hardyweinberg.xsl (indiv-genotypes): Combine Chen and diff
+	statistics tables by putting Chen and diff statistics in adjacent
+	columns for easy reference and print out only genotypes that are
+	significant for either statistic.
+
+	* Utils.py (XMLOutputStream._gentag): Strip out non-valid '?' in
+	XML tag name.
+	(XMLOutputStream.closetag): Use _gentag().
+	(XMLOutputStream.tagContents): Convert '&' and '<' and '>' into
+        valid XML equivalents.
+
+	* xslt/common.xsl (populationdata): Use the XML tag name in list
+	of metadata fields if a match in the list of standard fields is
+	not found.
+
+2005-07-26  Alex Lancaster  <alexl AT users sourceforge net>
+
+	* xslt/meta-to-r.xsl: Use <filename> in pop field, if <popname>
+	not found.
+
+2005-07-15  Alex Lancaster  <alexl AT users sourceforge net>
+
+	* Haplo.py (Emhaplofreq._runEmhaplofreq): Sane initialisation of
+	metaLoci to 'None' in case when Sequence data is not used.
+
+2005-06-29  Alex Lancaster  <alexl AT users sourceforge net>
+
+	* xslt/meta-to-r.xsl (l-locus-genotype, 1-locus-summary): Add the
+	Hardy-Weinberg enumeration p-values to output (both overall and
+	the Chen and diff versions of the individual genotypes).  Add a
+	trailing tabstop to header for consistency in the case of
+	1-locus-summary.
+	(multi-locus-summary): Output the 'metaloci' as a new column for
+	the overall 'gene-level' locus to aid in grouping sequence data
+	into different genes.
+
+	* Haplo.py (Emhaplofreq._runEmhaplofreq): Add 'metaloci' attribute
+	to XML <group> tag if using sequence data to indicate which
+	gene-level locus this LD/haplotype group belongs to.
+	(Emhaplofreq.allPairwise): Fix regex for HLA sequenceData to deal
+	with locus names that include digits, e.g. DQA1_32. 
+	Make sequenceData an instance variable.
+
+2005-06-22  Alex Lancaster  <alexl AT users sourceforge net>
+
+	* NEWS: Note new --generate-tsv option.
+
+	* pypop.py (generateTSV): Add new command-line option
+	"--generate-tsv", will run the XML to TSV processing on the the
+	generated -out.xml files (aka "popmeta") directly from pypop
+	without needing to run additional script.  Update usage message.
+
+	* popmeta.py: Code refactoring: relocated bulk of XML processing
+	to new file, Meta.py.  Keep only command-line processing here,
+	functionality of this script should be unchanged.
+
+	* Meta.py: New file.  Relocated bulk of processing of XML files
+	from popmeta.py to here, so code can be accessed from other parts
+	of pypop.
+
+2005-06-16  Alex Lancaster  <alexl AT users sourceforge net>
+
+	* SWIG/typemap.i (typemap): Convert typemaps to convert a 1-d array
+	of (long doubles) rather than (doubles) to a 1-d Python list of
+	plain doubles.
+	
+	* HardyWeinberg.py (HardyWeinbergEnumeration.serializeTo): API
+	change cleanup_genotypes() -> cleanup().
+
+	* setup.py (ext_HweEnum): Add external.c to extension.
+
+2005-06-15  Alex Lancaster  <alexl AT users sourceforge net>
+
+	* NEWS: Add notes on GCC 4.0/Python 2.4.
+
+	* setup.py: Override the overzealous use of _FORTIFY_SOURCE CFLAGS
+	flags that are in /usr/lib/python2.4/config/Makefile used on
+	Fedora Core 4 releases with Python 2.4.  Nasty hack to achieve
+	this suggested on
+	http://mail.python.org/pipermail/distutils-sig/2002-December/003123.html
+
+2005-06-09  Alex Lancaster  <alexl AT users sourceforge net>
+
+	* xslt/hardyweinberg.xsl (indiv-genotypes): Add observed/expected
+	to each individual p-value.
+
+2005-06-07  Alex Lancaster  <alexl AT users sourceforge net>
+
+	* HardyWeinberg.py (HardyWeinbergEnumeration.__init__): Add
+	_HweEnum as an instance variable so it can be called from other
+	methods.
+	(HardyWeinbergEnumeration.serializeTo): Call
+	_HweEnum.cleanup_genotypes() after data has been written out.
+	Rearrange debugging.
+
+2005-05-20  Alex Lancaster  <alexl AT users sourceforge net>
+
+	* config.ini: Document new section: '[HardyWeinbergEnumeration]'
+
+	* Main.py (Main._doGenotypeFile): Add debug flag to
+	HardyWeinbergEnumeration() call.
+	Add support for a new .ini file section:
+	'[HardyWeinbergEnumeration]'.  If present, full HWE enumeration
+	will be done.  FIXME: need a way to disable if too many
+	alleles/individuals in a given population.
+
+	* xslt/hardyweinberg.xsl (indiv-genotypes): Split out indiv
+	genotypes display code into a new template.
+	(hardyweinbergGuoThompson, hardyweinbergEnumeration): Use it.
+
+	* SWIG/typemap.i (typemap): New typemap to convert a 1-d array of
+	doubles (double []) to a Python list when returning from a C
+	function.  Add corresponding free method for double[]
+
+	* setup.py (ext_HweEnum): Include statistics.c file.  Define
+	INDIVID_GENOTYPES macro.
+
+	* Utils.py (StringMatrix.__getitem__): Fixed column calculation,
+	extraCount should be outside the call to index() on colList.
+
+	* HardyWeinberg.py (HardyWeinbergGuoThompson.dumpTable): Used
+	instance variables in debug class.
+	(HardyWeinbergEnumeration.__init__): Accept extra keywords for
+	base class and pass them on to base class.
+	Create new individual genotype pvalue lists from calls to new SWIG
+	methods _HweEnum.get_{diff,chen}_statistic_pvalue().
+	(HardyWeinbergEnumeration.serializeTo): Serialize new lists to
+	XML.
+
+2005-05-16  Alex Lancaster  <alexl AT users sourceforge net>
+
+	* setup.py (my_build_ext.swig_sources): Add "extension=None"
+	keyword parameter for forwards-compatibility with Python 2.4.
+
+2005-05-12  Alex Lancaster  <alexl AT users sourceforge net>
+
+	* Haplo.py (Emhaplofreq.allPairwise): A kludge to determine
+	whether we are analysing sequence data: use a regex to match loci
+	in the form A_32 or A_-32 (ideally this would be passed as a
+	parameter from the .ini file).  If we are running sequence data,
+	restrict "all" pairwise to pairs *within* the same gene
+	locus (e.g. "A_32:A_99" but *not* "A_32:C_45").
+
+	* pypop.py: Bump copyright dates.
+
+	* NEWS: Note new feature.
+
+	* ParseFile.py (ParseGenotypeFile._genInternalMaps): Create a map
+	'self.nonAlleleMap' to contain non-allele fields.
+	Remove obsolete return of self.alleleMap, now an iVar.
+	(ParseGenotypeFile._genDataStructures): When creating initial
+	StringMatrix instance, now include the list of non-allele columns,
+	separator type and the header metadata.  Before storing allele
+	data, store the non-allele sample data using new StringMatrix
+	call.
+	Ensure that separator is called as an instance variable
+	self.separator.
+
+	* Main.py (Main.__init__): Implement more detailed semantics for
+	'makeNewPopFile' option.  Now option should be of the format:
+	'type:order' where 'type' is one of 'separate-loci' or 'all-loci'
+	so that the user can specify whether a separate file should be
+	generated for each locus ('separate-loci') or a single file with
+	all loci ('all-loci').  'order' should be the order in the
+	filtering chain where the matrix is generated, there is no
+	default, for example, for generating files after the first filter
+	operation use '1'.
+	(Main._runFilters): Use detailed semantics for choosing files,
+	complicated code for generating output has now been replaced by a
+	single call to the new StringMatrix.dump() method, suppyling an
+	appropriate file stream.
+
+	* Utils.py (StringMatrix.__init__): Retool data structure so that
+	it saves non-allele data (e.g. population name, sample id) and the
+	meta-data header so that the entire data structure can be
+	regenerated at each step of filtering.
+	Add new extraList, colSep, headerLines keyword parameters to save
+	Initialise array size to cope with extra data.
+	(StringMatrix.dump): New method, saves a file-like representation
+	of the data to the specified stream (defaults to sys.stdout).
+	(StringMatrix.copy): Ensure that new data structures get
+	propagated during the deep copy.
+	(StringMatrix.__setitem__): Handle storage of non-allele data.
+	(StringMatrix.__getitem__): Handle new offsets into the NumPy
+	array.  Now users can retrieve a list of non-allele columns,
+	e.g. matrix['populat'] or matrix['id'].
+
+	* config.ini (filtersToApply): Add commented-out sample of how to
+	use new 'makeNewPopFile' option.
+
+2005-05-09  Alex Lancaster  <alexl AT users sourceforge net>
+
+	* setup.py (ext_Gthwe): Add PREFIX/include to include_dirs and
+	PREFIX/lib to library_dirs so that builds with prefixes that
+	aren't '/usr/' work.
+
+2005-05-03  Alex Lancaster  <alexl AT users sourceforge net>
+
+	* HardyWeinberg.py (HardyWeinberg.serializeXMLTableTo): Fixed
+	logic in serialization:  make sure key always exists.
+
+2005-04-27  Alex Lancaster  <alexl AT users sourceforge net>
+
+	* Main.py (Main.__init__): Some more horrible hacks to make
+	population dumps surpress the trailing tab characters and a bug
+	fix to ensure that first locus is not skipped.  This eventually
+	needs to be migrated to the data structure itself.
+
+2005-04-18  Alex Lancaster  <alexl AT users sourceforge net>
+
+	* xslt/meta-to-r.xsl (1-locus-genotype.dat): Support new
+	pval.chisq.chen field: p-value using Chen's chi-square statistic
+	in .dat file output as new field..
+
+	* HardyWeinberg.py (HardyWeinberg.__init__): Add flag for running
+	Chen's statistic.
+	(HardyWeinberg._generateTables): Create a data structure for
+	storing Chen statistics if above flag is set.
+	(HardyWeinberg._calcChisq): Store pvalue in data structure.
+	(HardyWeinberg.): Throughout: remove command-line pvalue cruft.
+	(HardyWeinberg.serializeXMLTableTo): Output Chen's statistics to
+	XML in genotypeTable block.
+
+2005-04-13  Alex Lancaster  <alexl AT users sourceforge net>
+
+	* NEWS: Official 0.6.0 release.
+
+2005-04-12  Alex Lancaster  <alexl AT users sourceforge net>
+
+	* Filter.py (AnthonyNolanFilter.translateMatrix): Use
+	_genOffsets() when creating position numbers for StringMatrix.
+	(AnthonyNolanFilter._genOffsets): New method, specific to HLA,
+	creates offsets for each locus so that number of amino acid sites
+	does not include the signal peptide region.
+
+2005-03-10  Alex Lancaster  <alexl AT users sourceforge net>
+
+	* NEWS: Note new features/bug fixes since December 2004.
+
+	* MANIFEST.in: Add various gthwe files to distribution (exclude
+	some stats modules not yet working).
+
+	* setup.py (my_build_ext.swig_sources): Remove SWIG_VERSION
+	checking code, no longer necessary.
+	Add a flag to determine whether we are generating a distribution
+	version taken from environment variable $DISTRIB.
+	(ext_Gthwe_files, ext_Gthwe_macros): New variables to generate
+	lists of files and C macros to use.  Only in internal CVS version,
+	add do we add gthwe/statistics.c and INDIVID_GENOTYPES macro.
+	(ext_Gthwe): Use them.
+	(ext_Gthwe): Remove MAX_ALLELE and LENGTH define_macros.
+	(extensions): Always distribute ext_Gthwe, but only generate
+	ext_HweEnum if using internal version.
+
+	* Makefile (DISTRIB): Set flag to pass to setup.py for
+	distributed.  version.
+	($(NAME_BIN)): Pass $DISTRIB environment variable to setup.py.
+	Remove Python extensions (.so files) before rebuild and remove
+	both extensions and build directory after build done.
+	(%): Make sure that doc rule does not attempt to rebuild pypop
+	from pypop.xml.
+	(MANIFEST, $(NAME_SRC)): Pass $DISTRIB env variable to setup.py.
+
+	* xslt/hardyweinberg.xsl (hardyweinbergGuoThompson): Don't print
+	out individual genotypes if none present.
+
+2005-03-03  Alex Lancaster  <alexl AT users sourceforge net>
+
+	* xslt/hardyweinberg.xsl (hardyweinbergGuoThompson): If pvalue is
+	exactly one, don't suppress output, just print a note.
+
+	* setup.py (ext_HweEnum): Add "popt" to list of libraries to
+	compile _HweEnum against.
+
+2005-03-01  Alex Lancaster  <alexl AT users sourceforge net>
+
+	* setup.py (ext_HweEnum): Set VERSION, PACKAGE_NAME macros to
+	substitute for automake doing this.
+	(ext_Gthwe): Add gthwe/statistics.c.
+
+2005-02-28  Alex Lancaster  <alexl AT users sourceforge net>
+
+	* HardyWeinberg.py (HardyWeinbergEnumeration.serializeTo):
+	Standardize output of pvalue tags.
+
+	* Utils.py (XMLOutputStream.tagContents): Allow keyword arguments
+	to generate XML attributes.
+
+	* xslt/hardyweinberg.xsl (hardyweinbergEnumeration): New template
+	to handle exact enumeration XML output.
+
+	* Main.py: Import HardyWeinbergEnumeration.
+	(Main._doGenotypeFile): Do enumeration version (comment out using
+	a "if 0" for the moment).
+
+	* HardyWeinberg.py (HardyWeinbergGuoThompson.generateFlattenedMatrix):
+	Split out generation of "flattened" matrix into separate method.
+	Make re-used variables instance variables.
+	(HardyWeinbergGuoThompson.dumpTable): Call it.  Use iVars in place
+	of local vars.
+	(HardyWeinbergEnumeration): New class, calls a SWIGed version of
+	Hazael Maldonado Torres' exact enumeration test (hwe-enumeration).
+
+	* setup.py (ext_HweEnum): Use SWIG wrapper pyfprintf function in
+	place of g_fprintf.
+
+2005-02-22  Alex Lancaster  <alexl AT users sourceforge net>
+
+	* pypop.py (binpath): Make this refer to the *directory* the
+	'pypop' script is found in, not the actual file.
+
+	* setup.py (ext_HweEnum): Add new extension for Hazael's
+	Hardy-Weinberg enumeration program.
+	Currently only build it if we are running from CVS.
+	Fix e-mail address.
+
+2005-02-17  Alex Lancaster  <alexl AT users sourceforge net>
+
+	* standalone.spec: Use .ini file from data/samples subdirectory.
+
+	* *.ini: Moved to data/samples subdirectory.
+
+2005-01-11  Owen Solberg  <solberg@mws11.biol.berkeley.edu>
+
+	* Filter.py (AnthonyNolanFilter._getConsensusFromLines): Fixed
+	some of the logic that determines the consensus sequence
+	(basically copying the code that determines polymorphic sequence,
+	in another part of this file.)
+
+2005-01-09  Owen Solberg  <solberg@mws11.biol.berkeley.edu>
+
+	* Filter.py (BinningFilter.doCustomBinning): Prototype of new
+	custom binning function now operational.
+
+	* Homozygosity.py
+	(HomozygosityEWSlatkinExact.serializeHomozygosityTo): Prevent math
+	errors by forcing the homozygosity to be positive (only a problem
+	for rare cases, when the result is so close to zero that the
+	floating point algorithms cause a negative result.)
+
+	* Main.py (Main._runFilters): Setting up the call for the custom
+	binning filter.
+	(Main._doGenotypeFile): Changing the if statement to remove the
+	prohibition of running Emhaplofreq on allelecount data.  Although
+	pointless at the allele level, the user may want to estimate LD
+	for pairs of amino acid positions from allele count data.
+
+2004-12-23  Alex Lancaster  <alexl AT users sourceforge net>
+
+	* NEWS: Now builds against recent versions of SWIG (no longer
+	stuck at version 1.3.9), should be compatible with versions of
+	SWIG > 1.3.10. (Tested against SWIG 1.3.21).
+
+	* pval/pval_wrap.i: %module _Pvalue -> Pvalue for compatibility
+	with most recent SWIG.
+
+	* SWIG/typemap.i: Update syntax for typemaps (remove deprecated
+	$source, $target).  In input typemaps: $source -> $input; $target
+	-> $1.  In output typemaps: $source -> $1; $target -> $result.
+	
+2004-11-09  Alex Lancaster  <alexl AT users sourceforge net>
+
+	* NEWS: Note feature.
+
+	* Main.py (Main.__init__): Handle odd allele counts when doing
+	allele count files.  If we are dealing with a
+	'[ParseGenotypeFile]' file type (i.e. that is originally
+	genotyped), we dis-allow individuals that are typed at only one
+	allele, and set allowSemiTyped to false.  If we have
+	a [ParseAllowCount] that data type (i.e. originally allele
+	counts), we allow for typing at only allele, because the matrix is
+	not a true set of individuals, and it allows us to preserve as
+	much data as possible, then set allowSemiTyped to true.
+
+	* DataTypes.py (_serializeAlleleCountDataAt): When tagging
+	<indivcount> use a float because in the case of allele count files
+	there could be "half"-individuals if not there is an odd number of
+	alleles in the population.
+	(Genotypes.__init__): Add new keyword parameter: 'allowSemiTyped'.
+	(Genotypes._checkAllele): New method to check if an individual is
+	valid.
+	(Genotypes._genDataStructures): Make 'alleleTable' and 'total'
+	into instance variables.  Use 'allowSemiTyped': if this is set, an
+	individual which is only typed at one allele is *not* thrown out
+	of the sample, but preserved.  If *not* set, the old default
+	behaviour is that the entire individual is thrown out.
+	(Genotypes.serializeAlleleCountDataAt): Use alleleTable and total
+	as instance variables.
+
+2004-11-07  Owen Solberg  <solberg@mws11.biol.berkeley.edu>
+
+	* Filter.py (AnthonyNolanFilter.makeSeqDictionaries): Reverting
+	the sequence filter module changes made in version 1.27, so that
+	once again, only polymorphic positions are analyzed.
+
+2004-10-29  Alex Lancaster  <alexl AT users sourceforge net>
+
+	* popmeta.py (datfiles): Use readline() rather than next() for
+	file object.  Iterators only work for file objects in Python 2.3
+	or better.
+
+2004-10-28  Alex Lancaster  <alexl AT users sourceforge net>
+
+	* Utils.py (splitIntoNGroups): Backgrade to use regular slices,
+	rather than itertools to preserve backward-compatibility with
+	Python 2.2 (shipped with Fedora Core 1 and other end-of-lifed
+	distros).
+
+	* popmeta.py: Use os.rename, rather than shutil.move to preserve
+	backward-compatibility with Python 2.2 (shutil.move was added in
+	2.3).
+
+2004-10-27  Alex Lancaster  <alexl AT users sourceforge net>
+
+	* NEWS: Note new feature.
+
+	* popmeta.py (batchsize): New command-line option.  Does the
+	processing in "batches".  If set and greater than one, list of XML
+	files is split into batchsize group.  For example, if there are 20
+	XML files and option is via using ("-b 2" or "--batchsize=2") then
+	the files will be processed in two batches, each consisting of 10
+	files.  If the number does not divide evenly, the last list will
+	contain all the "left-over" files.  This option is particularly
+	useful with large numbers of XML files that may not fit in memory
+	all at once.  Note this option is mutually exclusive with the
+	'--enable-PHYLIP' option because the PHYLIP output needs to
+	calculate allele frequencies across all populations before
+	generating files.
+	Also, only generate the 'sorted-by-locus.xml' file and other
+	auxilary XML generation in the PHYLIP case (not needed for pure
+	.dat file generation).
+	
+	* Utils.py (splitIntoNGroups): New function, divides a list up
+	into n parcels (plus whatever is left over).  This uses iterators,
+	so requires at least Python 2.3!
+
+2004-10-25  Owen Solberg  <solberg@mws11.biol.berkeley.edu>
+
+	* Filter.py (AnthonyNolanFilter.makeSeqDictionaries): Change test
+	of uniqueCount so that all positions with data are sent to new
+	matrix (not just positions with polymorphic data.)
+	(AnthonyNolanFilter.makeSeqDictionaries): Putting locus name as
+	attribute in xml tag rather than part of tag name.
+	(AnthonyNolanFilter._getConsensusFromLines): Bug fix - logic for
+	finding closest matching allele names was broken recently when we
+	added functionality for dealing with ambiguous alleles.  This was
+	a corner-case test, just for when allele names are 0100,
+	essentially serological.  Functionality restored.
+
+2004-10-07  Alex Lancaster  <alexl AT users sourceforge net>
+
+	* NEWS: Note new feature.
+
+	* xslt/meta-to-r.xsl (13ihwg-fmt): New parameter. When enabled,
+	use the metadata header directly from the XML, rather than
+	hardcoding it to the IHWG 13th workshop standard.  Disable by
+	default.
+	(header-line-start): Make a parameter into a template, so that the
+	population metadata line is generated dynamically from the XML
+	format.
+	(line-start, /): Use it and in the top-level template for
+	generation at the top of each file.
+	
+	* popmeta.py (usage_message): Add support for disabling the IHWG
+	standard header output, and use as is.  This is only enabled if
+	--disable-ihwg flag is enabled.  This is passed to the libxslt
+	Python bindings which in turn passes it to the stylesheets. 
+
+2004-09-29  Owen Solberg  <solberg@mws11.biol.berkeley.edu>
+
+	* Filter.py (AnthonyNolanFilter._getConsensusFromLines): Adding
+	yet another logic test to deal with allele name ambiguity: if the
+	allele name is 4 digit, ending in 00, we can safely chop this off,
+	as it won't be found in the seq dict (because the only reason this
+	function is called is when the allele name wasn't found.)
+
+2004-09-27  Owen Solberg  <solberg@mws11.biol.berkeley.edu>
+
+	* ParseFile.py (ParseFile._mapFields): Added if statement to see
+	if an asterisk character is given as the first item in the valid
+	fields list, in which case we accept any field name (ie, locus
+	name) as valid.  This makes sense only in the allelecount file
+	context.
+
+2004-09-22  Owen Solberg  <solberg@mws11.biol.berkeley.edu>
+
+	* Main.py (Main.__init__): Change the way prefixFileName is made,
+	by throwing out what follows the last "." rather than keeping what
+	follows the first "."  For input files with only one "."
+	character, such as "filename.pop", there will be no change in
+	behaviour.
+
+2004-09-20  Alex Lancaster  <alexl AT users sourceforge net>
+
+	* xslt/meta-to-r.xsl (output.genotype.distrib): New parameter to
+	selectively enable the generation of a separate file with full
+	test statistic distributions for p-values for *every* genotype.
+	By default, set to off ("0"), otherwise it generates too many
+	files.
+
+2004-09-17  Alex Lancaster  <alexl AT users sourceforge net>
+
+	* ParseFile.py (ParseAlleleCountFile._genDataStructures): Bug fix:
+	check to see if key for allele already exists if it does,
+	increment the count for that allele, otherwise assign the count
+	for that allele.  This handles the case when the same allele
+	appears twice in an allele count file: it counts both entries as
+	being valid.
+
+2004-09-16  Owen Solberg  <solberg@mws11.biol.berkeley.edu>
+
+	* Filter.py (AnthonyNolanFilter.__init__): Commenting out C/Cw
+	corner case.  Expect to remove this eventually.
+	(AnthonyNolanFilter._getMSFLinesForLocus): Commenting out C/Cw.
+	(AnthonyNolanFilter._getSequenceFromLines): Commenting out C/Cw.
+	(AnthonyNolanFilter._getConsensusFromLines): Adding logic test to
+	split the allele name (as given) on a slash ('/') and then to use
+	the split strings to find consensus sequence.  This allows
+	reasonable sequence lookup when faced with ambiguous allele names
+	like 0101/0102/0103.  We may want to make the split character
+	configurable.
+
+2004-09-16  Alex Lancaster  <alexl AT users sourceforge net>
+
+	* NEWS: Add notes about new features.
+
+	* allelecount.ini ([Homozygosity]): Comment out obsolete test.
+	Add testing of filters for allele count data: Sequence and
+	AnthonyNolan.
+
+	* DataTypes.py (AlleleCounts): Note that class is obsolete.
+
+	* ParseFile.py: Import operator for mod function.
+	(ParseAlleleCountFile._genDataStructures): Create a
+	pseudo-genotype data matrix with the same number of alleles as the
+	original count file.
+	(ParseAlleleCountFile.getMatrix): New method to mirror the
+	identical method in ParseGenotypeFile class.
+
+	* Main.py (Main.__init__): Major code refactor: Move out the
+	parsing of the untypedAllele and alleleDesignator from
+	ParseGenotypeFile section to the common block.
+	Move filtering after parsing either ParseAlleleCount or
+	ParseGenotypeFile.
+	Don't instantitate the AlleleCounts object, obsolete, the output
+	of the ParseAlleleCountFile is now fed directly into the Genotypes
+	object.
+	Call _doGenotypeFile(), obsolete do_AlleleCountFile() method.
+	(Main._doAlleleCountFile): Remove obsolete method.
+	(Main._doGenotypeFile): Remove obsolete lookup-table-based
+	Homozygosity test.
+	Even if other sections such as [HardyWeinberg] and [Emhaplofreq]
+	are present, only run the homozygosity tests, since the other
+	tests only make sense for true genotype files.
+
+2004-09-15  Owen Solberg  <solberg@mws11.biol.berkeley.edu>
+
+	* Main.py (Main._doAlleleCountFile): When we reconfigured the
+	Homozygosity object several months ago, we broke this call.  This
+	change makes it work as for a genotype file (i.e., it passes just
+	the values of the allele dictionary, not the entire dictionary
+	itself.)
+
+2004-09-11  Alex Lancaster  <alexl AT users sourceforge net>
+
+	* NEWS: Update with note on fixes related to monomorphic loci:
+	thanks to Steve Mack and Owen Solberg for the bug report(s).
+
+	* xslt/common.xsl (allelecounts): If locus is
+	monomorphic (checking 'role" attribute on the <allelecounts> XML
+	tag, emit a warning note in the output to alert the user.
+
+	* Main.py (Main._doGenotypeFile): In main loop for each locus,
+	check to see if given locus is monomorphic, if it is: skip the
+	rest of the analysis for that particular locus and emit the
+	closing </locus> XML tag and go to the next locus. Thanks to Steve
+	Mack and Owen Solberg for the bug report(s) on this issue.
+
+	* DataTypes.py (_serializeAlleleCountDataAt): When emitting XML
+	tag for <allelecounts>, add a 'role' attribute set to
+	'monomorphic' if there is only one distinct allele.
+
+2004-09-09  Owen Solberg  <solberg@mws11.biol.berkeley.edu>
+
+	* RandomBinning.py (RandomBinsForHomozygosity.randomMethod): Added
+	ability to use the EWSlatkinExact module to compute homozygosity F
+	statistics (rather than just F itself).  Other changes involve
+	accepting necessary parameters (like numReplicates) for this test.
+
+	* Main.py (Main._doGenotypeFile): Passing xmlStream filename to
+	the random binning module.
+
+	* Filter.py (AnthonyNolanFilter.makeSeqDictionaries): Added
+	ability for sequence filter to output complete sequences, not just
+	the polymorphic positions.
+
+	* xslt/meta-to-r.xsl (1-locus-summary): Added normDevHomozygosity
+	as output field for the homozygosityEWSlatkinExact section.
+
+2004-08-17  Owen Solberg  <solberg@mws11.biol.berkeley.edu>
+
+	* Main.py (Main._doGenotypeFile): Added "if self.debug" to quiet
+	the output during random binning.
+
+	* RandomBinning.py (RandomBinsForHomozygosity.__init__): Retooled
+	the output so it can deal with multiple input files.
+	(RandomBinsForHomozygosity.randomMethod): Retooled the output so
+	it can deal with multiple input files, as above.  Currently,
+	results of random binning are sent to standard out.  Need to put
+	this in a log file
+
+	* Filter.py (AnthonyNolanFilter.translateMatrix): Changed logFile
+	tag name for the sequence summary.
+	(AnthonyNolanFilter.makeSeqDictionaries): Added some commented-out
+	code which outputs full-sequence translations of a pop file (i.e.,
+	not just the polymorphic positions.)  This could become a method
+	wit options in the config file in the future.
+
+2004-08-11  Alex Lancaster  <alex AT berkeley.edu>
+
+	* xslt/meta-to-r.xsl (output-field): Fix template to also output
+	'****' if node is present but empty.
+	(1-locus-genotype.dat): Print out p-values for each genotype for 4
+	types of stats: Chen & diff statistic
+	(for Monte-Carlo) and Chen & diff statistic (for Monte-Carlo
+	Markov chain).  Also print out individual files for each genotype
+	with the 4 statistics for *each* replicate.  Add the appropriate
+	headers.
+
+	* xslt/hardyweinberg.xsl (hardyweinbergGuoThompson): Print out
+	individual genotypes for both Chen and "diff" statistic.
+
+	* HardyWeinberg.py (HardyWeinberg.serializeXMLTableTo): Include a
+	genotypeId attribute for each <genotype> in <genotypetable>.
+
+2004-08-04  Alex Lancaster  <alex AT berkeley.edu>
+
+	* xslt/meta-to-r.xsl (1-locus-genotype): Add observed and expected
+	as output column headers.
+
+2004-07-29  Alex Lancaster  <alex AT berkeley.edu>
+
+	* xslt/meta-to-r.xsl (line-start): Added labcode, method, collect
+	(collection site) which are present the XML output file, but were
+	missing in the .dat output files to the beginning of each line, so
+	they are propagated through and can be used later downstream
+	analyses.
+
+2004-07-22  Alex Lancaster  <alexl AT users sourceforge net>
+
+	* HardyWeinberg.py (HardyWeinbergGuoThompson.dumpTable): Don't
+	check self.maxMatrixSize, option is now deprecated as Gthwe
+	module should be able to handle matrices of arbitrary size.
+	Remove entire "if" statement.
+
+	* NEWS: Update with some of the new features since 0.5.2 (some yet
+	to be documented).
+
+	* pypop.py: New option '-f' (long version '--filelist') which
+	accepts a file containing a list of files (one per line) to
+	process (note that this is mutually exclusive with supplying
+	INPUTFILEs, and will abort with an error message if you supply
+	both simultaneously).   
+	In batch version, handle multiple INPUTFILEs supplied as
+	command-line arguments and support Unix shell-globbing
+	syntax (e.g. pypop.py *.pop).  Supported through use of a loop
+	around multiple calls to Main().  (NOTE: This is supported *only*
+	in batch version, not in the interactive version, which expects
+	one and only one file supplied by user.
+	(usage_message): Update accordingly.
+
+2004-07-20  Owen Solberg  <solberg@mws11.biol.berkeley.edu>
+
+	* xslt/meta-to-r.xsl (gen-lines): Added pairwise LD (as opposed to
+	D prime) and haplo frequency, which are output to the
+	2-locus-haplo.dat file.
+
+	* xslt/emhaplofreq.xsl (pairwise-ld): Changes to make column
+	heading and provide data for D (LD) summary statistic (this is in
+	addition to the D prime, which was already included in the table.
+
+	* Main.py (Main.__init__, Main._runFilters): The ad hoc pop file
+	dump subroutine has been modified to create a separate file for
+	each locus.  This makes most sense when dealing with alleles that
+	have been translated to sequence (thus increasing the number of
+	'loci').  Changes deal with creating logical names for the dump
+	files.  This subroutine needs to be reworked.
+
+2004-07-20  Alex Lancaster  <alexl AT users sourceforge net>
+
+	* xslt/meta-to-r.xsl (1-locus-genotype.dat): Generate new file
+	'1-locus-genotype.dat', modelled on '1-locus-allele.dat', except
+	that it generates 1-locus genotype statistics from the
+	HardyWeinberg modules such as the individual genotype p-values for
+	both MCMC and plain Monte Carlo test.
+
+	* setup.py (ext_Gthwe): Remove obsolete PERMU_TEST macro from
+	define_macros() section.  Add INDIVID_GENOTYPES macro: assign to
+	'1' (true).
+
+	* config.ini [HardyWeinbergGuoThompsonMonteCarlo]: New section,
+	implements the Guo & Thompson test without using the Markov
+	chain (i.e. pure Monte Carlo randomization).
+
+	* HardyWeinberg.py (HardyWeinbergGuoThompson.__init__): Handle new
+	Boolean flags: runMCMCTest and runPlainMCTest, and new option
+	monteCarloSteps, set as iVars.
+	(HardyWeinbergGuoThompson.dumpTable): Only run MCMC ("regular"
+	Guo&Thompson with Markov-chain) if runMCMCTest is set) and only
+	run randomization test (Monte-Carlo w/o Markov-chain) if
+	runPlainMCTest is set.
+	Allow GuoThompson test to be run if at least two alleles
+	present (test was originally bailing out with a 'too-few-alleles'
+	message if there were not at least 3 alleles).
+
+	* Main.py (Main._doGenotypeFile): Handle new
+	section [HardyWeinbergGuoThompsonMonteCarlo] in config file.  Deal
+	with it in the same [HardyWeinbergGuoThompson] block as sections
+	in one call to module, because data structures used are identical.
+	Now have to deal with NoSectionError as well as NoOptionError
+	exceptions when getting values.  Flags runMCMCTest and
+	runPlainMCTest are now passed as flagged to
+	HardyWeinbergGuoThompson class instantiation.
+
+2004-07-16  Alex Lancaster  <alexl AT users sourceforge net>
+
+	* xslt/hardyweinberg.xsl (hardyweinbergGuoThompson): Emit list of
+	p-values for individual genotypes, use order from
+	hardyweinberg/genotypetable to get names of genotypes.
+
+2004-07-12  Alex Lancaster  <alexl AT users sourceforge net>
+
+	* xslt/hardyweinberg.xsl (hardyweinbergGuoThompson): Ensure that
+	overall pvalue is printed out in the appropriate location, by
+	restricting the XPath to use <pvalue type="overall">.
+
+	* HardyWeinberg.py (HardyWeinbergGuoThompson.dumpTable): Pass in
+	cStringIO "file pointer" to _run_randomization() routine.
+	Serialize list of genotypes and names also to XML output.
+
+2004-07-07  Alex Lancaster  <alexl AT users sourceforge net>
+
+	* HardyWeinberg.py (HardyWeinbergGuoThompson.dumpTable):
+	Comment-out call to _Gthwe. run_randomization() for the moment.
+
+	* setup.py (ext_Gthwe): Make PERMU_TEST and DEBUG #defines be false
+	for the moment.
+
+2004-06-30  Alex Lancaster  <alexl AT users sourceforge net>
+
+	* HardyWeinberg.py (HardyWeinbergGuoThompson.dumpTable): Call new
+	SWIG function in _Gthwe module, _Gthwe.run_randomization(), now
+	split out from run_data MCMC code.  Still need to XML-ify output.
+
+2004-06-23  Alex Lancaster  <alexl AT users sourceforge net>
+
+	* HardyWeinberg.py (HardyWeinbergGuoThompson.dumpTable): Fixed
+	erroneous value being passed to _Gthwe.run_data().  The total
+	number of *genotypes* (k*(k+1)/2) was being passed as the 'total'
+	parameter, rather than the total number of *gametes* (N).  This
+	has now been corrected.  This did not affect the MCMC results.
+
+2004-05-19  Alex Lancaster  <alexl AT users sourceforge net>
+
+	* setup.py (ext_Gthwe): Add PERMU_TEST macro to be true ('1') for
+	the moment.
+
+	* HardyWeinberg.py (HardyWeinbergGuoThompson.dumpTable): Remove
+	obsolete definition of n for gthwe module (should be an array, not
+	an integer).  When creating the array of zeroes, make it length of
+	self.k (number of distinct alleles), rather than hardcoded at
+	35 (since that limitation has been removed in the actual module).
+
+2004-05-17  Alex Lancaster  <alexl AT users sourceforge net>
+
+	* setup.py (my_build_ext.swig_sources): Comment out setting of
+	CFLAGS to -funroll-loops, causes floating-point number operation
+	instability.  See post here:
+	http://www.oonumerics.org/MailArchives/oon-list/msg00740.php.
+	(ext_Gthwe): Added libraries to compile with "gsl" and "gslcblas"
+	for GNU Scientific Library (GSL), this has to be hardcoded for the
+	moment, as can't compile it as a standalone module as yet.
+	Set DEBUG C pre-processor flag to 1.
+
+	* HardyWeinberg.py (HardyWeinbergGuoThompson.dumpTable): Added
+	debug message for sortedAlleles.  More debug information and
+	flush() sys.stdout.
+
+2004-03-09  Alex Lancaster  <alexl AT users sourceforge net>
+
+	* Utils.py (getUserFilenameInput): Comment out test code for the
+	moment.
+
+	* standalone.spec: execfile Utils.py in globals() namespace rather
+	than locals().
+	(createWrappers): convertLineEndings() for the various wrapper
+	scripts when running on Win32.
+
+	* NEWS: Update with fix. Release 0.5.2
+	
+2004-03-04  Alex Lancaster  <alexl AT users sourceforge net>
+
+	* setup.py (py_modules): Add missing RandomBinning.py file.
+	Thanks to Hazael Maldonado Torres for the bug report.
+
+	* NEWS: Updated with this fix.
+
+2004-02-26  Alex Lancaster  <alexl AT users sourceforge net>
+
+	* popmeta.py (popmetabinpath): Improve heuristics to find 'xslt'
+	subdirectory.
+
+	* NEWS: Update with popmeta.py addition and release date.
+
+	* MANIFEST.in: Add allelelist-by-locus.xsl haplolist-by-group.xsl
+	to distribution.
+
+	* standalone.spec (xslt_dir): Likewise.  Fix typo in batch file
+        generation under Windows.
+
+2004-02-17  Alex Lancaster  <alexl AT users sourceforge net>
+
+	* standalone.spec (createWrappers, createObjects):
+	Refactor/separate out common code to create scripts and wrappers.
+	Add popmeta.py to scripts to generate standalone executables.
+
+	* Utils.py (checkXSLFile, getUserFilenameInput): Moved from
+	Main.py.
+
+	* Main.py (checkXSLFile, getUserFilenameInput): Move to Utils.py
+	and import from there.
+
+2004-02-12  Owen Solberg  <solberg@localhost.localdomain>
+
+	* Main.py (Main.__init__): Generate filename for pop file dump, to
+	be used if option is called.  Generate path for pop file dump by
+	appending the path.
+	(Main._runFilters): General cleanup of pop file dump code.
+	Renaming variables, making code more readable.
+
+2004-02-11  Owen Solberg  <solberg@localhost.localdomain>
+
+	* Filter.py: Import add from operator, for use in the tallying of
+	residues/nucleotides in sequence filter logging.
+	(AnthonyNolanFilter.translateMatrix): Adding comments and
+	improving readability of code for sequence filter logging.
+
+	* Main.py (Main.__init__): Look for option makeNewPopFile in the
+	Filters section of the ini file.  This is a digit that specifies
+	any point in the chain of filters where the user wants to have the
+	data structure saved back to disk in the pop format.
+	(Main._runFilters): After running all the filters and building the
+	matrixHistory list, this method now checks to see if the user
+	asked to have any one of the filter stages saved to disk.
+
+2004-02-10  Owen Solberg  <solberg@localhost.localdomain>
+
+	* Filter.py (AnthonyNolanFilter.checkAlleleName): Sequence
+	translation filter now produces raw text dump to the filter xml
+	file, summarizing polymorphic positions of each allele.
+
+2004-02-09  Alex Lancaster  <alexl AT socrates.berkeley.edu>
+
+	* xslt/emhaplofreq.xsl: (emhaplofreq): Don't forget to output the
+	<group mode="LD"/> output, for specified LD estimates.
+	
+	* NEWS: Start collecting Release Notes for version 0.5.1.
+	
+	* config.ini [Emhaplofreq]: New parameter 'numInitCond': number of
+	initial conditions used before performing permutations. Default to
+	50.
+
+	* Haplo.py (Emhaplofreq._runEmhaplofreq): Accept new parameter
+	numInitConds: sets number of initial conditions before performing
+	the permutation test. Default: 50.  Pass through to SWIG wrapper
+	call main_proc().
+	(Emhaplofreq.estHaplotypes): Accept new parameter numInitCond,
+	pass to _runEmhaplofreq.
+	(Emhaplofreq.estLinkageDisequilibrium): Likewise, but also set
+	numPermutations, numPermuInitCond to 'None', should be initialized
+	by Main.
+	(Emhaplofreq.allPairwise): Likewise.
+
+	* Main.py (Main._doGenotypeFile): Parse new [Emhaplofreq] option
+	'numInitCond', so that the number of initial conditions for the
+	first iteration LD calculation (and therefore haplotype
+	estimation) is user-configurable.  Default to 50.
+	Add more verbose messages for telling user what is going on with
+	haplotype estimation.
+	Send 'numInitCond' to Haplo.estHaplotypes() method invocation.
+	Likewise pass 'numInitCond' to Haplo.allPairwise() call.
+	Likewise for Haplo.estLinkageDisequilibrium(), pass numInitCond,
+	numPermutations, numPermuInitCond.
+	Remove diagnostics that may erroneously imply an error to the
+	user (if nothing is wrong, don't say anything).
+
+2003-12-30  Alex Lancaster  <alexl AT socrates.berkeley.edu>
+
+	* config.ini (directory): Remove all leading hardcoded
+	'/home/solberg' from paths in filters.  For the purposes of this
+	demo file, assume paths are relative to ~/ihwg/src.
+
+	* NEWS: Note "missing <prefix>" message suppression.
+
+	* standalone.spec: Set PYTHONHOME in both sh and DOS wrapper
+	scripts so that standalone executable stops whining about missing
+	prefix and exec_prefix.
+	Refactor wrapper script and .bat file generation so that common
+	options are set in one place.
+
+2003-12-29  Alex Lancaster  <alexl AT socrates.berkeley.edu>
+
+	* NEWS (PyPop 0.5): Start adding release notes for public release.
+	Note new wrapper changes.
+	
+	* standalone.spec (pypop-batch.bat): Mirror Linux batch wrapper
+	script for DOS [Win9*,2k,NT,XP] binary.
+	(pypop.bat): Add a "pause" statement in DOS .bat file so that DOS
+	window doesn't disappear when interactive script finishes, will
+	now wait for user to press a key.
+	Remove '.sh' prefix from all Linux wrapper scripts, now use
+	'#!/bin/sh' to indicate to file(1) that it is a shell-script.
+	
+	* Makefile (NAME_BIN): Make uname test for "CYGWIN_NT" work for
+	both 5.0 [Win2k] and XP [5.1].
+
+	* Main.py (getConfigInstance): Remove obsolete code and unused
+	'specifiedConfigFile' variable.
+
+2003-12-24  Alex Lancaster  <alexl AT socrates.berkeley.edu>
+
+	* standalone.spec: For Linux, add LD_LIBRARY_PATH variable to
+	wrapper scripts so that distributed shared libraries get used
+	*before* system libraries.
+	Generate pypop-batch.{sh,bat} wrapper scripts at top-level for
+	users for both Win32 and Linux.
+
+2003-12-19  Owen Solberg  <solberg AT socrates.berkeley.edu>
+
+	* Main.py (Main._runFilters): Parse the ini file for "directory"
+	and "file" rather than "path."
+	Change the way CustomBinning is called to account for changes in
+	that method.
+	
+	* Filter.py (BinningFilter.__init__): Receive the binningPath when
+	this object is instantiated.
+	(BinningFilter.doCustomBinning): Modularized this method so that
+	it can be called in line with the other filters.  Method now looks
+	for custom binning specifications in a single file, specified in
+	the CustomBinning section of the ini file using the file option.
+
+	* config.ini: For greater user clarity, paths which are
+	directories are now indicated by the option "directory" and paths
+	which are files by "file."
+
+2003-12-19  Alex Lancaster  <alexl AT socrates.berkeley.edu>
+
+	* standalone.spec: Include NEWS file in standalone binary.
+
+	* MANIFEST.in: Add NEWS to manifest.
+
+	* NEWS: New file. Contains "Release Notes": contains user-visible
+	changes to PyPop.
+
+	* ParseFile.py (ParseGenotypeFile._genInternalMaps): Fix logic
+	when checking for the existence of a column for the population
+	name, test for the presence of "None", because if 'popNameCol' is
+	'0' (rather than a positive integer), then the test
+	will (erroneously) ignore the column and won't set the population
+	name correctly.
+
+2003-12-17  Owen Solberg  <solberg AT socrates.berkeley.edu>
+
+	* RandomBinning.py (RandomBinsForHomozygosity.sequenceMethod):
+	Major retooling enables this method to keep track of each position
+	in the sequence.  This is useful for debugging and may be useful
+	in later applications of this method.  
+	Variable names changed and comments added to improve readablity of
+	code.
+
+	* Main.py (Main.__init__): Initialize self.filteringFlag to zero.
+	This flag makes it easier to coordinate the filters and filterlog.
+	The filterLogFile XML output stream is initialized after checking
+	that there is a Filters section in the ini file, and that the
+	length of the filtersToApply is non-zero.  Immediately after
+	initializing the log file, the opentag is written (the filename
+	configuration has also been fixed) and the filteringFlag is set to
+	one.
+	(Main._doGenotypeFile): Calling the sequence-based random binning
+	method now also requires the polyseqpos to be passed to it, so the
+	method can tabulate statistics about each position.
+
+	* Filter.py (AnthonyNolanFilter.__init__): Removed the XML opentag
+	for the filterlog.  This is now handled by Main, as is the closing
+	of the filterlog.
+	(AnthonyNolanFilter.cleanup): Removed all code from this method,
+	leaving pass as a placeholder.  The closing the filterlog is now
+	handled by Main.
+
+2003-12-17  Alex Lancaster  <alexl AT socrates.berkeley.edu>
+
+	* Utils.py (TextOutputStream.flush): New method, call flush() on
+	underlying file pointer.
+
+	* Main.py (Main._doGenotypeFile): API for Emhaplofreq has changed,
+	constructor now expects XML stream to be passed to it since
+	serialization is now done periodically from within class to avoid
+	memory overhead of in-memory string.  
+	Call Emhaplofreq.serializeStart() to generate start tag after
+	instantiation.  flush() current XML buffer before commencing
+	calculations to make sure they are written to disk in case of
+	problems.
+	At end of LD/haplo est calculations, change serializeTo() ->
+	serializeEnd()
+
+	* Haplo.py: Move import of cStringIO to top-level.  Doc fixes.
+	(Emhaplofreq.__init__): Constructor now expects an XML stream to
+	be given as a keyword parameter.  This class has different API to
+	the others because output is only available in stream
+	form (i.e. it cannot be accessed programmatically through method
+	calls).
+	(Emhaplofreq.serializeTo): Removed method, split into
+	serializeStart(), serializeEnd().  Serialization for emhaplofreq
+	output is now done periodically within the _runEmhaplofreq()
+	method to avoid huge overhead.
+	(Emhaplofreq.serializeStart, Emhaplofreq.serializeEnd): New
+	methods, perform the start and end tag as did old serializeTo()
+	method.
+	(Emhaplofreq._runEmhaplofreq): fp is now a local variable, not an
+	instance variable and created each time method is called.
+	Serialization for emhaplofreq output is now done at end of method
+	to to avoid huge overhead of storing the entire string in memory
+	until all emhaplofreq functions were called.  flush() self.stream
+	before exiting to get all buffered output written to disk.
+
+2003-12-17  Alex Lancaster  <alexl AT socrates.berkeley.edu>
+
+	* config.ini ([Emhaplofreq]): Add 'permutationPrintFlag' Boolean
+	option.  Determines whether the likelihood ratio for each
+	permutation will be logged to the XML output file, this is
+	disabled by default WARNING: if this is enabled it can
+	*drastically* grow the size of the output XML file on the order of
+	product of the number of possible pairwise comparisons and
+	permutations.  Machines with lower RAM and disk space may have
+	difficulty coping with this.
+
+	* Main.py (Main._doGenotypeFile): Check for new [Emhaplofreq]
+	Boolean option 'permutationPrintFlag', default to zero.  Add
+	information that permutation info is being printed to LOG
+	diagnostic. Pass through to Haplo() instance.
+
+	* Haplo.py (Emhaplofreq._runEmhaplofreq): Add new keyword
+	parameter 'permutationPrintFlag': sets whether the result from
+	permutation output run will be included in the output XML.
+	Default: 0 (disabled).  Pass through to the SWIG wrapper.
+	(Emhaplofreq.allPairwise): Likewise add a matching keyword
+	parameter (default 0) and pass through to Main._runEmhaplofreq().
+	(Emhaplofreq.allPairwiseLD, allPairwiseWithPermu): Comment-out,
+	currently deprecated interface.
+
+2003-12-16  Alex Lancaster  <alexl AT socrates.berkeley.edu>
+
+	* pypop.py: Move import of getUserFilenameInput to top-level, add
+	checkXSLFile import.
+	(xslFilename): Call Main.checkXSLFile() if xsl file is supplied as
+	a command-line option ("-x", "--xsl")
+	(xslFilenameDefault): Add heuristics to look for
+	xslFilenameDefault, in case command-line option was not set.
+	Heuristics may return a valid path or None (but xslFilenameDefault
+	here is *always* overriden by command-line option or .ini file
+	setting).  1) check datapath if it run from a 'system'
+	installation in sys.prefix and NOT in a 'frozen' state.  2) check
+	child directory 'xslt/' of script location first.  3) if not found
+	here check sibling directory '../xslt/'
+	Pass in xslFilenameDefault to Main() contructor call. 
+
+	* Main.py (checkXSLFile): New function to check existence of xsl
+	file, given a path, subdirectory, and filename, generate the
+	canonical path and check its existence and return it, return
+	'None' or abort with an error, depending on abort keyword
+	setting (default is not to abort).
+	(Main.__init__): Add keyword argument xslFilenameDefault to use if
+	not set by either command line option or '.ini' file.
+	(Main.__init__): Heuristics for checking XSL file have been moved
+	here and are checked before main loop.  Now we only use
+	xslFilenameDefault if not passed in via xslFilename or .ini file
+	is set.  xslFilename set (i.e. command-line option was used)
+	always takes precedence to .ini file.
+	(Main.__init__): Removed obsolete setting of altpath.
+	(Main._genTextOutput): Move heuristics for checking .ini file
+	options to __init__.
+	(Main._doGenotypeFile): A value of '1' is not permitted for
+	'allPairwiseLDWithPerm' option. It is no longer a boolean variable
+	to enable the permutation test.  It should now contain the NUMBER
+	of permutations desired.  Exit with an error message.
+	
+2003-12-12  Alex Lancaster  <alexl AT socrates.berkeley.edu>
+
+	* config.ini ([allPairwiseLDWithPermu]): Change semantics of
+	command, this is no longer a boolean variable but an integer
+	specifiying how many permutations we will.  If it is nonzero, the
+	default) or then permutations are enabled and the number of
+	permutations specified in the option is used.  If the flag is
+	ommited or zero, then no permutation testing is done.
+	([numPermuInitCond]): New .ini file option: Number of initial
+	conditions used if permutation test is run default is to 5 (this
+	parameter is only used if 'allPairwiseLDWithPermu' is set and
+	nonzero).
+	
+	* Main.py (Main._doGenotypeFile): Parse 'allePairwiseLDWithPermu'
+	as an integer, rather than a boolean.  If set to zero, then this
+	has the effect of the old permutationFlag=0, but the number is now
+	used as the number of permutations we wish to run (Default 1001).
+	Update LOG message with number of permutations to be run.  Pass
+	allPairwiseLDWithPermu as the new numPermutations keyword to Haplo
+	class invocation.
+	Parse new '.ini' option. 'numPermuInitCond', an integer which is
+	the number of initial conditions used per permutation run (default
+	to 5).  Pass to allPairwise() method call.
+
+	* Haplo.py (Emhaplofreq._runEmhaplofreq): Add two new keyword
+	parameter to method: 'numPermutations': sets number of
+	permutations that will be performed if 'permutationFlag' *is*
+	set.  [Default: 1001]. 'numPermuInitConds': sets number of initial
+	conditions tried per-permutation.  [Default: 5].  Pass these
+	parameters on to the main_proc invocation from shared library.
+	(Emhaplofreq.allPairwise): Change parameter name from a boolean
+	permutationFlag -> numPermutations (integer).  Use in place
+	throughout, pass to _runEmhaplofreq.  Internal permutationFlag set
+	to zero if numPermutations = 0.
+	(Emhaplofreq.allPairwise): Add new keyword parameter:
+	'numPermuInitCond', no default.  Pass through to _runEmhaplofreq.
+
+2003-12-10  Alex Lancaster  <alexl AT socrates.berkeley.edu>
+
+	* standalone.spec: When generating standalone version, VERSION file 
+	is now placed in dist_dir/bin where pypop script now looks for it.
+
+	* pypop.py: Relocated and streamlined 'VERSION' finding code.  The
+	logic is now to find our exactly which directory the current pypop
+	script is being run: 1) First, check to see if we are running from
+	the system-installed location and not in the 'frozen' standalone
+	state; 2) if not, assume VERSION is in the same directory where
+	the script is located; 3) finally check to see if the VERSION file
+	exists, if not, exit with an error message.
+	Pass the version variable to the Main() class instance.
+	Add new command line option "-V", long version "--version" to
+	report the current version.  When passed simply exit with the
+	version_message.  
+	(usage_message): Mention it.
+	(copyright_message): Copyright boilerplate.
+	(interactive_message, version_message): New messages, version
+	message outputs the version and the copyright_message,
+	interactive_message also outputs version and copyright_message
+
+	* Main.py (Main.__init__): Add new keyword 'version' to
+	constructor, version information is now passed into the class, not
+	generated within.  Make version an instance variable throughout.
+	Move code to find the 'VERSION' file and the version information
+	to the main 'pypop.py' script.
+	Fixed 'self.config.ini' -> 'config.ini' in altpath construction.
+
+2003-12-08  Owen Solberg  <solberg AT socrates.berkeley.edu>
+
+	* RandomBinning.py: Changed import to use copy instead of
+	deepcopy. Copy should be sufficient and is probably less
+	intensive.  
+	Importing Homozygosity module so we can use the new classless
+	method contained therein.
+	(RandomBinsForHomozygosity): Removed 'Exact' from name of class.
+	(RandomBinsForHomozygosity.__init__): Removed setup of
+	EWSlatkinExact object.
+	(RandomBinsForHomozygosity.randomMethod): Changing printed
+	output to reflect absence of EWSlatkinExact test results.
+	Deepcopy changed to copy.
+	Homozygosity calculation is obtained by calling new method in
+	Homozygosity module.
+	(RandomBinsForHomozygosity.sequenceMethod): Changes as above for
+	randomMethod.
+
+	* Main.py: Changed import to reflect changed class name in
+	RandomBinning module.
+	(Main._doGenotypeFile): As above, reflects changed class name.
+
+	* Homozygosity.py (getObservedHomozygosityFromAlleleData): New
+	method to calculate observed homozygosity from a list of allele
+	counts.  This may want to be folded in to the similar method that
+	already exists in class Homozygosity, but that may require
+	retooling the class a bit.
+	(HomozygosityEWSlatkinExact.doCalcs): Cosmetic improvement for the
+	construction of li, the list of allele counts that gets passed to
+	the EWSlatkinExact object.
+
+2003-12-06  Owen Solberg  <solberg AT socrates.berkeley.edu>
+
+	* Filter.py (AnthonyNolanFilter.makeSeqDictionaries): Any missing
+	sequence data is replaced with an asterisk prior to returning the
+	polyseq dictionary.
+	Approach to checking for polymorphic positions is more robust.
+
+	* Main.py: Changed imports to reflect new RandomBinning interface.
+	(Main.__init__): Move randomBinningFlag initialization to
+	beginning of method.
+	(Main._runFilters): Fixed faulty exception statement -
+	anthonyNolanPath -> alleleFileFormat.
+	(Main._doGenotypeFile): Added if statement to check to see if
+	random binning will actually be possible (ie, if the target number
+	of bins must be less than the initial number of bins.)
+	Removed randomHomozygosities list initialization, since the
+	Homozygosity module is called from RandomBinning now.
+
+	* RandomBinning.py: Import Homozygosity module.
+	(RandomBinsForHomozygosityExact): Renamed class from
+	RandomAlleleBinning.
+	Refactoring so that the class will run the homozygosity test for
+	each random binning result, immediately after producing it.
+	Formated printed output mainly for testing. [Later output will be
+	part of the XML stream.]
+	(RandomBinsForHomozygosityExact.__init__): Added keywords to
+	constructor needed for running Homozygosity test from within
+	module.
+	Created object for HomozygosityEWSlatkinExact test.
+	(RandomBinsForHomozygosityExact.sequenceMethod): Changed method so
+	that only random binnings that meet the target number of bins
+	exactly are accepted.  Infinite loops are prevented by opting out
+	if the number of failed attempts is greater than 10 times the
+	number of desired results.
+
+	* Homozygosity.py (HomozygosityEWSlatkinExact.doCalcs): Changed
+	_doCalcs to doCalcs (to make method public).
+	(HomozygosityEWSlatkinExact.serializeHomozygosityTo): Calling
+	doCalcs.
+
+2003-12-05  Alex Lancaster  <alexl AT socrates.berkeley.edu>
+
+	* setup.py (ext_Emhaplofreq): Add "depends" for module on
+	'emhaplofreq/emhaplofreq.h'.  Only enable this for Python > 2.1,
+	[feature added in 2.2 or 2.3].
+	(ext_Pvalue, ext_Gthwe): Likewise for pval/*.h and gthwe/*.h
+	files.
+
+2003-12-05  Alex Lancaster  <alexl AT socrates.berkeley.edu>
+
+	* pypop.py (usage_message): Add new "-o", "--outputdir" option to
+	allow user to specify alternative directory for output and pass
+	through to invocation of Main. If directory does not exist, exit
+	with an error.  Replace getXmlOutFilename -> getXmlPath and
+	likewise for getTxtOutFilename -> getTxtOutPath.
+	
+	* Main.py (Main.__init__): Add new parameter outputDir for
+	allowing different output directories and set as instance
+	variable.  If set, prepend outputDir
+	to {xmlOut,txtOut,defaultFilterLog}Filename to create
+	corresponding {xmlOut,txtOut,defaultFilterLog}Path variables.
+	Use them in all "open()" functions.
+	(Main._genTextOutput): Likewise.
+	(Main.getXmlOutPath): Rename from getXmlOutFilename.
+	(Main.getTxtOutPath): Likewise for getTxtOutPath.
+
+2003-11-26  Alex Lancaster  <alexl AT socrates.berkeley.edu>
+
+	* Main.py (Main.__init__): Moved filterLogFile creation to the
+	first if statement to check for the presence of the '[Filters]'
+	section in the configuration file, so that when _runFilters is
+	reached the file exists at that point.
+
+	* Utils.py (StringMatrix.__setitem__): Remove ugly hack to that
+	appended a colon to each item in StringMatrix.
+	(StringMatrix.filterOut.f): Remove colon check.
+	(appendTo2dList): New function to append a given string to each
+	element in a two 2d list (i.e. a list of lists).
+	(__main__): Tweak test harness.
+
+	* Haplo.py: Import new function appendTo2dList from Utils.py
+	(Emhaplofreq._runEmhaplofreq): Use it to add colon ':', when
+	generating the subMatrix to pass to the Emhaplofreq module.
+	Remove the truncation from the debug message as well.
+
+	* DataTypes.py (Genotypes._genDataStructures): Remove FIXME hack
+	for Utils.py, don't need to lop-off trailing colon.
+
+	* Filter.py (AnthonyNolanFilter.doFiltering): Likewise
+	(AnthonyNolanFilter.makeSeqDictionaries): Likewise.
+	(AnthonyNolanFilter.translateMatrix): Likewise.
+	(BinningFilter.doDigitBinning): Likewise.
+
+2003-11-26  Alex Lancaster  <alexl AT socrates.berkeley.edu>
+
+	* Main.py (Main.__init__): Set randomBinningFlag instance variable
+	to off (0) by default, so it always exists.
+	Move the creation of the filterLogFile to same place that the
+	inline XML pointing to the filter log is created.
+	Close log file *after* running _do*File() methods moving it here,
+	means that the open and close are at the same level and are called
+	in the same method.
+	(Main._runFilters): Move setting of randomBinningFlag to __init__
+	Likewise for filterLogFile open() and close().
+
+2003-11-26  Alex Lancaster  <alexl AT socrates.berkeley.edu>
+
+	* Utils.py (StringMatrix.copy): Don't forget to copy the internal
+	array too!
+	(__main__): Modify test harness slightly.
+
+2003-11-25 Owen Solberg  <solberg AT socrates.berkeley.edu>
+	
+	* Homozygosity.py: Import add from operator.
+	(Homozygosity.getObservedHomozygosity): Change to reflect new data
+	structure above.
+	(HomozygosityEWSlatkinExact.__init__): Likewise change interface.
+	(HomozygosityEWSlatkinExact._doCalcs): New method, split out from
+	__init__ so we can reuse the object with new alleleData without
+	having to instantiate a new instance.  Move extraction of data
+	from wrapper from serializeHomozygosityTo method into new instance
+	variables, so we can return data outside the stream context.
+	(HomozygosityEWSlatkinExact.getHomozygosity): Return data as a
+	tuple, acquired in _doCalcs.
+	(HomozygosityEWSlatkinExact.serializeHomozygosityTo): Call
+	_doCalcs as per old interface.
+	(HomozygosityEWSlatkinExact.serializeHomozygosityTo): Populate
+	XML stream with data from new instance variables .
+	(Homozygosity.__init__): Change interface: now takes
+	alleleData (list of counts), directly, avoids having to unpack
+	data structure.
+
+	* config.ini ([Filters]): New section, new 'filtersToApply' option
+	can specifiy arbitrary filters, that each have their own section.
+	([Filter1], [Filter2]): Sample configs for AnthonyNolan and
+	DigitBinning filter, respectively.
+	([Sequence]): New section, sample configuration for translating
+	alleles and running entire analysis at sequence level (if section
+	not present, won't do this).
+	([RandomAlleleBinning]): New section to configure behaviour of
+	random binning.
+
+	* RandomBinning.py: New file.  
+	(RandomAlleleBinning): New class to handle creation of random
+	binning code in modular fashion.
+
+	* Filter.py: Import deepcopy from copy.
+	(AnthonyNolanFilter): Doc string.
+	(AnthonyNolanFilter.__init__): New keyword options:
+	alleleFileFormat (default: 'msf'), and alleleDesignator (default:
+	'*'), sequenceFileSuffix ('_prot') for handling different kind of
+	data.
+	Handle MSF files in addition to text ones..
+	Don't call self.cleanup (may need to write more to the log file).
+	(AnthonyNolanFilter.makeSeqDictionaries): New method, split out
+	from __init__ to make the the sequence dictionary creation
+	externally available.
+	(AnthonyNolanFilter.translateMatrix): New method, likewise split
+	out from __init__.
+	(AnthonyNolanFilter._getSequenceFromLines): New method to get
+	sequence for MSF files.
+	(AnthonyNolanFilter._getConsensusFromLines): New method, gets
+	consensus sequences.
+	(BinningFilter): Reworked the BinningFilter class.  Handles
+	digitBinning, comment out old CustomBinning for the moment, it is
+	broken against new interface.
+
+	* Main.py: From Filter, import MSFilter.
+	(getUserFilenameInput): Fix doc string.
+	(Main.__init__): Make defaultFilterLogFile an instance variable.
+	(Main.__init__): Likewise for alleleDesignator.
+	(Main.__init__): Completely refactor filtering: we now look for a
+	'[Filter]' section in the .ini file.  We can concatenate these
+	filters arbitrarily and each successive matrix is saved.  We run
+	filters just before we create the Genotypes matrix.  Remove
+	useAnthonyNolanFilter option from [ParseGenotypeFile].
+	Moved filterLog file creation out of AnthonyNolanFilter to here.
+	(Main._runFilters): New method, which implements the checking of
+	filters.  To emulate old filters we have some sensible defaults,
+	"AnthonyNolan" will behave like the old filter, and obviates the
+	need for a special "flag" in [ParseFile].  Filters that can
+	currently be used are: AnthonyNolanFilter (can use the MSF format
+	for parsing), DigitBinning, CustomBinnning, or Sequence (to
+	translate in a nucleotide or amino-acid sequence).
+	(Main._doGenotypeFile): Handle the change to the interface for
+	Homozygosity object, currently only requires the list of count
+	values, not the whole dictionary.  
+	Implement preliminary code for doing randomized "binning": both in
+	the truly random and "phylogenetically informed" way.
+	FIXME: Close the filterLog file here (currently broken if no
+	filters are used).
+
+2003-11-25  Alex Lancaster  <alexl AT socrates.berkeley.edu>
+
+	* Start ChangeLog.

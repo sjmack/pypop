@@ -1,10 +1,10 @@
 ## Python for Population Genomics (PyPop)
 
-PyPop is a framework for processing genotype and allele data and running analyses.
+PyPop is a framework for processing genotype and allele data and running population genetic analyses.
 
 ## Installation
 
-### 1. Install OS-specific tools
+### 1. Install OS-specific development environment
 
 #### MacOS X
 
@@ -20,42 +20,50 @@ export CPATH=/opt/local/include:$CPATH
 
 4. Rerun your bash shell login in order to make these new exports active in your environment.  At the command line type: 
 
-```exec bash -login```
-     
-### 3. Clone the repository:
+```
+exec bash -login
+```
+
+### 2. Clone the repository:
 
     git clone https://github.com/alexlancaster/pypop.git
   
-### 4. Install external dependencies
-
-* ```swig``` (Simple Wrapper Interface Generator) 
-* ```gsl``` (GNU Scientific Library)
-* ```Numeric``` (Python Numeric)
-* ```libxml2/libxslt``` (Python bindings)
+### 3. Install dependencies
 
 #### MacOS:
 
 Install the MacPorts packages
 
-      sudo port install swig-python gsl py27-numeric py-libxml2 py27-libxslt
+      sudo port install swig-python gsl py27-numpy py-libxml2 py27-libxslt py-setuptools py27-pip
       
-Set MacPorts to use the just-installed 2.7 MacPorts version of Python:
+Set MacPorts to use the just-installed 2.7 MacPorts version of Python and pip:
 
       sudo port select --set python python27
+      sudo port select --set pip pip27
 
-#### Linux (Fedora): 
+Check that the MacPorts version of Python is active by typing: ```which python```, if it is working correctly you should see the following:
+
+```
+/opt/local/bin/python
+```
+
+#### Linux (Fedora/Centos/RHEL): 
 
 Need at least Fedora 25 for the appropriate dependencies:
 
-      sudo dnf install swig gsl-devel python-numeric python-libxml2 libxslt-python
+      sudo dnf install swig gsl-devel python2-numpy python-libxml2 libxslt-python python-setuptools python-pip
 
-(see also [DEV_NOTES.md](DEV_NOTES.md) for instructions on containerizing the install within a Centos/RHEL release)
+See [DEV_NOTES.md](DEV_NOTES.md) for instructions on containerizing the install on a Centos/RHEL release.
 
-#### Linux (Debian/Ubuntu): 
+#### Linux (Ubuntu)
 
-      TBD
-     
-### 5. Build
+Install the following packages
+
+      sudo apt install git libgsl-dev python-numpy python-libxml2 python-libxslt1 python-setuptools python-pip
+
+The ```swig``` package in recent Ubuntu releases has bugs, you will need to compile the most recent from source, see also [DEV_NOTES.md](DEV_NOTES.md) for details.
+
+### 4. Build
 
     ./setup.py build
 
@@ -66,12 +74,22 @@ explanation of the options available.
 
 ### Run a minimal dataset:
 
-    ./pypop.py -c  data/samples/minimal.ini data/samples/USAFEL-UchiTelle-small.pop
+    ./bin/pypop.py -c  tests/data/minimal.ini tests/data/USAFEL-UchiTelle-small.pop
 
 This will generate the following two files, an XML output file and a plain text version:
 
     USAFEL-UchiTelle-small-out.xml
     USAFEL-UchiTelle-small-out.txt
+
+## Running test suite
+
+      ./setup.py test
+
+If you run into errors, file a bug (as per Support, below), include the output of ```py.test``` run in verbose mode and capturing the output
+
+      py.test -s -v
+
+(See DEV_NOTES.md for more details on installing or running ```py.test``` outside the context of setuptools.)
 
 ## Support
 
@@ -86,6 +104,7 @@ When reporting bugs, especially during installation, please run the following an
     echo $CPATH
     echo $LIBRARY_PATH
     echo $PATH
+    which python
 
 If you are running on MacOS please also run and include the output of:
 

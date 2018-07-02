@@ -49,8 +49,9 @@ MODIFICATIONS.
  </data:haplo-fields>
 
  <xsl:template match="emhaplofreq/group"/> 
+ <xsl:template match="haplostats/group"/> 
 
- <xsl:template match="emhaplofreq">
+ <xsl:template match="emhaplofreq|haplostats">
   <xsl:call-template name="section">
    <xsl:with-param name="level" select="2"/>
    <xsl:with-param name="title">Haplotype / linkage disequilibrium (LD) statistics</xsl:with-param>
@@ -176,15 +177,15 @@ MODIFICATIONS.
     </xsl:call-template>
     
     <xsl:call-template name="justified-cell">
-     <xsl:with-param name="padVar"># permu</xsl:with-param>
-     <xsl:with-param name="length" select="8"/>
+     <xsl:with-param name="padVar">ALD_1_2</xsl:with-param>
+     <xsl:with-param name="length" select="10"/>
      <xsl:with-param name="type" select="'right'"/>
     </xsl:call-template>
     
     <xsl:call-template name="justified-cell">
-     <xsl:with-param name="padVar"> p-value</xsl:with-param>
-     <xsl:with-param name="length" select="8"/>
-     <xsl:with-param name="type" select="'left'"/>
+     <xsl:with-param name="padVar">ALD_2_1</xsl:with-param>
+     <xsl:with-param name="length" select="10"/>
+     <xsl:with-param name="type" select="'right'"/>
     </xsl:call-template>
     
     <xsl:call-template name="newline"/>
@@ -260,33 +261,17 @@ MODIFICATIONS.
       </xsl:call-template>
       
       <xsl:call-template name="justified-cell">
-       <xsl:with-param name="padVar">
-	<xsl:choose>
-	  <xsl:when test="permutationSummary/pvalue">
-	  <xsl:value-of select="permutationSummary/pvalue/@totalperm"/>
-	 </xsl:when>
-	 <xsl:otherwise>-</xsl:otherwise>
-	</xsl:choose>
-       </xsl:with-param>
-       <xsl:with-param name="length" select="8"/>
+       <xsl:with-param name="padVar" select="linkagediseq/summary/ALD_1_2"/>
+       <xsl:with-param name="length" select="10"/>
        <xsl:with-param name="type" select="'right'"/>
-    </xsl:call-template>
-      
-      <xsl:call-template name="justified-cell">
-       <xsl:with-param name="padVar">
-	<xsl:text> </xsl:text>
-	<xsl:choose>
-	  <xsl:when test="permutationSummary/pvalue">
-	  <xsl:apply-templates select="permutationSummary/pvalue"/>
-	 </xsl:when>
-	 <xsl:otherwise>-</xsl:otherwise>
-	</xsl:choose>
-       </xsl:with-param>
-       <xsl:with-param name="length" select="8"/>
-       <xsl:with-param name="type" select="'left'"/>
       </xsl:call-template>
-      
-      
+
+      <xsl:call-template name="justified-cell">
+       <xsl:with-param name="padVar" select="linkagediseq/summary/ALD_2_1"/>
+       <xsl:with-param name="length" select="10"/>
+       <xsl:with-param name="type" select="'right'"/>
+      </xsl:call-template>
+
       <xsl:call-template name="newline"/>
      </xsl:if>
      
